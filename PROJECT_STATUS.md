@@ -41,8 +41,15 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 
 ## Deployment state
 
-- GitHub Actions `deploy.yml` builds and deploys Pages on push to `main`. Pages enabled with `build_type=workflow`.
-- Live URL verified with an HTTP 200 + rendered content after the first deploy.
+- **Live (verified 25 Oct 2026):** https://siddhant-pardeshi.github.io/communityconnect/ — HTTP 200, full UI rendered in a real browser against the production URL.
+- Deploy method for v0.1.0: production build pushed to the `gh-pages` branch; Pages enabled with source = `gh-pages` root.
+- `.github/workflows/` (CI + Pages Actions deploy) are **written and committed locally but not yet pushed** — the maintainer's GitHub token had `repo` scope without `workflow` scope at publish time. One-time fix:
+  ```bash
+  gh auth refresh -h github.com -s workflow
+  git add .github && git commit -m "chore: enable CI + Pages via Actions" && git push
+  ```
+  Then optionally switch Pages to "GitHub Actions" source in repo settings; until then the `gh-pages` branch method remains the deploy path.
+- Release: [v0.1.0](https://github.com/siddhant-pardeshi/communityconnect/releases/tag/v0.1.0) with `communityconnect-app-v0.1.0.zip` (portable build for any static host).
 - Demo seed data is client-side and clearly labeled; it does not represent real users or activity.
 
 ## Next executable milestone (v0.2)
