@@ -1,0 +1,585 @@
+================================================================================
+COMMUNITYCONNECT — AI MASTER CONTEXT FILE
+================================================================================
+Version: 0.3.0 · Updated: 25 October 2026 · Maintainer: Siddhant Pardeshi
+
+PURPOSE OF THIS FILE
+Attach this single file to any AI coding tool (or hand it to any engineer) to get
+the complete, current picture of the project: architecture, every business rule,
+data model, routes, deployment runbook, test inventory, known pitfalls, and the
+working conventions. Everything here is factual — implemented and verified, or
+explicitly marked as not built. Nothing in this project is faked.
+
+If this file and the code disagree, the code wins — then update this file.
+
+
+================================================================================
+1. IDENTITY
+================================================================================
+Product name     : CommunityConnect (working name — NOT trademark-cleared)
+Tagline          : Find your event. Bring your people.
+Secondary lines  : "Never event alone." / "From three links to one plan." /
+                   "Decide together. Show up together." / "Your crew has chosen."
+Live app         : https://siddhant-pardeshi.github.io/communityconnect/
+Repository       : https://github.com/siddhant-pardeshi/communityconnect (public)
+License          : Apache-2.0 (full text in LICENSE)
+Owner account    : GitHub user `siddhant-pardeshi` (Siddhant Pardeshi, founder)
+Brand doc        : docs/BRAND.md — name shortlist (Orbitly, CrewUp, Huddl, Saathi,
+                   Junto) and tagline system; rename lives in index.html + manifest
+Local workspace  : C:\Users\siddh\Desktop\CommunityConnect (Windows, Git Bash)
+                   The three 0*_*.txt prompt files are the founder's private
+                   planning docs — they are git-ignored and must never be pushed.
+
+One-line pitch   : a group chat has three event links and no decision; this turns
+                   them into one confirmed group plan.
+
+
+================================================================================
+2. PRODUCT THESIS & CORE LOOP
+================================================================================
+Loop: discover/post → shortlist in a private Circle → vote (can/maybe/cannot) in
+a Decision Room before a hard deadline → finalize one plan → each person confirms
+independently → find a buddy → attend → vouch for people who were great → repeat.
+
+Honesty rules (never violate, in code or copy):
+- Availability is NOT a commitment. A confirmed plan is NOT a ticket. Registration
+  always happens on the organizer's own site; opening a source link never
+  registers anyone. Attendance is self-reported, never verified check-in.
+- Unknown price is shown as "Price unknown — check source", never inferred free.
+- Every listing carries its source URL. The recommendation formula is published
+  in the UI, never a black box.
+- No invented users, testimonials, counts or endorsements anywhere. Demo data is
+  fictional, labeled "DEMO DATA", and excluded from any real claims.
+- No dark patterns: no streak shame, no countdown pressure, no XP for invites,
+  no XP for vouches, no paid safety/privacy ever.
+- Target users: students 18+, professionals, job seekers, people between roles,
+  founders, community organizers. India-first (Bengaluru demo context, INR,
+  Asia/Kolkata) but timezone/currency-generic in the data model.
+
+
+================================================================================
+3. TECH STACK & MONOREPO SHAPE
+================================================================================
+Stack (pinned in package.json files, lockfile at repo root):
+- Build       : Vite 5 + @vitejs/plugin-react, base './' (relative — required for
+                GitHub Pages project sites), target es2020
+- UI          : React 18.3 + react-dom, JSX via react-jsx
+- Language    : TypeScript 5.6, strict, moduleResolution "bundler", noEmit
+- QR codes    : `qrcode` npm package (browser toDataURL)
+- Tests       : vitest 2 (run from packages/core)
+- Styling     : ONE hand-written stylesheet apps/web/src/styles/global.css
+                (design tokens, no Tailwind, no CSS modules)
+- Routing     : custom hash router (apps/web/src/router.tsx) — required for
+                GitHub Pages (no server rewrites); routes look like #/app/...
+- Persistence : browser localStorage, key `cc_state_v3` (see §7 migrations)
+- Fonts       : Google Fonts link (Manrope UI + Fraunces display) with system
+                fallbacks; app must work offline without them
+- PWA         : manifest.webmanifest + public/sw.js service worker (see §10)
+
+npm workspaces (root package.json is private, version 0.3.0):
+  packages/core  → "@cc/core" — pure domain: types, rules, util, seed + tests.
+                   ZERO React, ZERO DOM, ZERO storage imports. Consumed as TS
+                   source via Vite alias + tsconfig paths (no build step):
+                   vite.config.ts alias '@cc/core' → ../../packages/core/src/index.ts
+                   tsconfig paths  '@cc/core' → ../../packages/core/src/index.ts
+  apps/web       → "@cc/web" — the React SPA (all UI + the store).
+
+DEPENDENCY DIRECTION (iron rule): @cc/core never imports from apps/web. Backend
+workers must be able to reuse every rule unchanged.
+
+Root scripts:
+  npm install        # installs both workspaces (deps hoist to root node_modules)
+  npm run dev        # vite dev server → http://localhost:5173
+  npm test           # vitest across workspaces (27 tests)
+  npm run build      # typecheck BOTH workspaces + vite production build
+  npm run typecheck  # tsc --noEmit in each workspace
+
+File map (what lives where — keep this structure):
+  packages/core/src/types.ts    ALL data contracts + constants (intents, roles,
+                                claim codes, max cofounders, vouch claims)
+  packages/core/src/rules.ts    Pure policy: XP ledger/caps, streak grace,
+                                decision scoring, referral, roles (isStaff,
+                                isFounderTeam, canSetRole, cofounderSlotsTaken),
+                                trust (computeTrust, hasActiveVouch, window)
+  packages/core/src/util.ts     Pure helpers: uid, makeReferralCode, pairKeyOf,
+                                hueColor, time formatting (Intl-based),
+                                dayKeyInTz/rewardWeekKey/daysBetweenKeys,
+                                overlaps() half-open interval math, eventIcs
+                                (RFC 5545 escaping/folding), priceLabel,
+                                toLocalInput, COMMON_TZS, publicView()/backgroundChips()
+  packages/core/src/seed.ts     Fictional demo dataset (labeled demo:true) —
+                                9 users incl. founder team, 11 events (one PAST
+                                event e_mixer for vouch demos), 2 circles,
+                                3 decisions, RSVPs, vouches, audit, pulse
+  packages/core/src/index.ts    Barrel — the ONLY import surface
+  packages/core/tests/          util.test.ts (7 tests) + rules.test.ts (20 tests)
+
+  apps/web/src/main.tsx         React root + global.css import + SW registration
+  apps/web/src/App.tsx          Route dispatch, shell (rail/topbar/bottom-nav),
+                                theme + accent effects, sweepIfDue(), suspended
+                                account gate, <main key={route.path}> for
+                                page-enter animation
+  apps/web/src/router.tsx       useRoute() parses location.hash; navigate(); Link
+  apps/web/src/lib/store.ts     THE ONLY mutable-state module (see §7) — actions,
+                                selectors, persistence, ~1100 lines
+  apps/web/src/lib/qr.ts        qrDataUrl() + profileUrl()
+  apps/web/src/lib/dom.ts       DOM-bound helpers (download blob) — kept out of core
+  apps/web/src/components/      ui.tsx (Btn/Card/Chip/Avatar/Modal/Field/Toasts/
+                                EmptyState/Bar/showToast), Logo.tsx (Gather Mark
+                                + Wordmark), Constellation.tsx (hero art),
+                                EventCard.tsx, Vouch.tsx (VouchModal/TrustChips/
+                                VouchButton), motion.tsx (Reveal/CountUp/StarPrompt)
+  apps/web/src/pages/           26 screens (see §9 route map)
+  apps/web/src/styles/global.css Design system + motion system (§11)
+  apps/web/public/              favicon.svg, maskable.svg, manifest.webmanifest, sw.js
+  .github/workflows/            ci.yml + deploy.yml — written, git-IGNORED locally,
+                                blocked by token scope (see §12)
+  docs/                         ARCHITECTURE.md, DECISIONS.md, adr/0001–0003,
+                                ACCEPTANCE_MATRIX.md, LAUNCH_PLAYBOOK.md,
+                                BUSINESS_MODEL.md, BRAND.md, assets/banner.svg
+  marketing/                    build_guides.py (ReportLab), generated PDFs, QR
+                                PNGs, social banner HTML+PNG, assets/
+  PROJECT_STATUS.md             Running status + verification evidence (append-only)
+
+
+================================================================================
+4. DATA MODEL (packages/core/src/types.ts — the contract)
+================================================================================
+AppState (persisted whole, version: 3):
+  users: Record<id, UserAccount>     events: Record<id, EventItem>
+  rsvps: Rsvp[]                      circles: Record<id, Circle>
+  activity: ActivityEntry[]          (per-circle feed)
+  decisions: Record<id, Decision>    connections: Connection[]
+  threads: Record<pairKey, ThreadMessage[]>   (pair keys AND "event:<id>" keys)
+  buddyRequests: BuddyRequest[]      notifications: Notification[]
+  reports: Report[]                  vouches: Vouch[]
+  audit: AuditEntry[]                (append-only admin log)
+  pulse: PulseEvent[]                (global live feed, capped 120)
+  interestForms: InterestFormEntry[] (pricing page)
+  currentUserId: string | null       conductVersion: string
+
+UserAccount key fields: id, name, pronouns?, city, timezone (reward tz),
+  bio?, role? (display), college?, course?, company?, background?, intents[],
+  links[{label,url}], avatarHue, privacy{showCollege, showCompany,
+  showBackground, directoryOptIn, showIntent}, email, passHash+salt (SHA-256
+  demo auth), referralCode (XXXX-0000), referredBy?, boostUntil?, streak
+  {lastDay, count, graceWeek}, xp, ledger XpEntry[] {action,key,amount,at},
+  badges[], accent ('cobalt'|'coral'|'sage'|'saffron'), notifPrefs,
+  siteRole, founding?, suspended?, blocked?, demo?, deleted?
+
+EventItem: id, title, summary, organizer, sourceUrl?, sourceProvider?, mode
+  ('in_person'|'online'|'hybrid'), city?, venue?, startUtc/endUtc (ISO UTC),
+  tz (original IANA), price (number|null — null means UNKNOWN, never free),
+  currency 'INR', tags[], accessibility? (undefined = not supplied, never
+  assumed), visibility 'public'|'circle', circleId?, createdBy, status
+  'active'|'canceled', moderation 'approved'|'pending'|'removed', createdAt, demo?
+
+Circle: id, name, description, ownerId, memberIds[], inviteCode, createdAt
+Decision: id, circleId, title, prompt, candidateIds[] (2–8),
+  eligibleVoters[] (ROSTER SNAPSHOT at open — do not recompute),
+  deadlineUtc, liveResults (bool), quorumPct (60), status
+  'open'|'closed'|'finalized'|'canceled', ballots Ballot[]
+  ({userId, responses: Record<eventId,'can'|'maybe'|'cannot'>, favorite?,
+  acknowledgedClashes?, submittedAt}), result?: DecisionResult, plan?: Plan
+Plan (lives inside Decision): id, decisionId, circleId, eventId, status
+  'awaiting'|'confirmed'|'review_needed'|'canceled'|'completed',
+  confirmations: Record<userId,'confirmed'|'declined'>, meetupNote?, createdAt
+Connection: id, pairKey ("a|b" sorted), from, to, reason, status
+  'pending'|'accepted'|'declined', createdAt, respondedAt?
+BuddyRequest: id, eventId, fromUserId, toUserId (null = open board), note,
+  meetupPoint?, status pending|accepted|declined|canceled
+Vouch: id, from, to, eventId, hearts (bool), claims VouchClaim[]
+  ('college'|'company'|'course'), conduct ('polite'|'professional')[],
+  note? (MODERATOR-ONLY, never public), at
+Notification: {userId, type, title, body, link?, at, read}
+Report: {kind 'event'|'user'|'message', targetId, reporterId, reason, detail?,
+  status received|actioned|dismissed|appealed, resolvedBy?, resolutionNote?}
+AuditEntry: {actorId, action, targetId, detail, at}
+PulseEvent: {kind 'signup'|'event'|'vouch'|'plan'|'connection'|'referral'|'report',
+  text, at}
+
+
+================================================================================
+5. BUSINESS RULES (all pure functions in packages/core/src/rules.ts — TESTED)
+================================================================================
+XP (XP_RULES): checkin 1 · vote 5 · event_posted 10 · connection 10 (max 2 per
+  week per user, once per unordered pair EVER via canAwardConnection) ·
+  plan_confirm 15 · buddy 10 · referral 75 (both sides).
+  DAILY_CONTRIBUTION_CAP = 30/day over capped actions
+  {vote, event_posted, connection, plan_confirm, buddy}.
+  Referral, checkin and vouches are OUTSIDE the cap. Vouches award NO XP —
+  reputation must never be farmable.
+  awardXp(ledger, action, key) is dedupe-keyed: same key never pays twice.
+
+Levels: 0 Explorer · 100 Connector · 250 Planner · 500 Constellation.
+  Accent themes (coral/sage/saffron) unlock at 250 XP — cobalt always free.
+  Founding members (user.founding) bypass the 250 gate.
+
+Badges (BADGES map): founding, first_plan, connector, vote_starter,
+  helpful_intro, curator (≥2 people plan to attend your event), crew_buddy.
+
+Streaks (applyCheckin): one intentional check-in per account-local day
+  (dayKeyInTz with user.timezone). Same-day repeat = no-op. Gap of 1 day
+  continues. Gap of 2 days consumes ONE grace credit from the MISSED day's
+  week (rewardWeekKey runs Monday-start) if not already used that week —
+  streak preserved, no XP for the grace day. Gap ≥ 3 resets count to 1.
+  rewardWeekKey(UTC, Sunday) belongs to the previous Monday.
+
+Decision scoring (scoreDecision): score = 100 × (0.65·can + 0.15·maybe +
+  0.20·favorite) / eligibleVoters.length (the snapshot roster, NOT current
+  members). Quorum: responded ≥ ceil(60% × N) AND N ≥ 2. Ties stay ties (no
+  top). All-zero preference = no recommendation. Blank responses are NO
+  RESPONSE, never 'cannot'. Warnings surface: tie, no-preference, quorum miss,
+  roster changes, non-responders. FORMULA_VERSION string is shown in UI.
+
+Decision lifecycle: open → (deadline passes, sweep() flips) closed →
+  finalized (owner only; needs a winner OR a written overrideReason; result
+  snapshot created; ONE plan created, status 'awaiting'). Plan → 'confirmed'
+  when ≥ 2 eligible participants independently confirm (owner confirms
+  separately). Material event edits (title/time/status) flip live plans to
+  'review_needed' (canceled event → plan 'canceled') and notify everyone.
+  Past event end + noncanceled → 'completed' via sweep(). Confirmations are
+  per-person; never implied by voting.
+
+Peer vouches (TRUST_WINDOW_DAYS = 14): requires BOTH users to have a
+  participation record (RSVP or plan confirmation) on the same event AND that
+  event's startUtc ≤ now. No self-vouch, blocked pairs rejected, ONE vouch per
+  (from,to) per rolling window (hasActiveVouch). computeTrust() counts only
+  vouches newer than 14 days: hearts, per-claim verification counts, polite/
+  professional counts. Public surfaces show positive signals only; concerns go
+  through reports; vouch.note is moderator-only.
+
+Referrals: signup with ?ref=CODE → both sides +75 XP (dedupe key `ref:<invitee>`,
+  once per invitee forever), referrer +14-day boost (directory sort), invitee
+  +7-day welcome boost, Connector badges. If referrer isFounderTeam → invitee
+  becomes FOUNDING (user.founding=true, badge 'founding', +100 XP welcome,
+  all accents, directory priority).
+
+Roles (SiteRole): 'founder' (exactly one, immutable, cannot be suspended via
+  console) → 'cofounder' (MAX_COFOUNDERS = 2, appointed only by founder) →
+  'moderator' → 'member'. isStaff() = founder|cofounder|moderator (report
+  resolution, event editing rights). isFounderTeam() = founder|cofounder
+  (founder console, adminUpdateUser, adminSetRole, adminSetSuspended).
+  canSetRole() encodes the matrix; adminSetRole() additionally enforces the
+  cofounder cap. Every admin action appends to state.audit. Suspended users:
+  login rejected, shell shows suspension screen, currentUserId cleared on suspend.
+
+Team claim codes (client-side launch conveniences, in types.ts):
+  FOUNDER_CLAIM_CODE   = 'CC-FOUNDER-2026'  → claims founder seat if vacant
+  COFOUNDER_CLAIM_CODE = 'CC-CREW-2026'     → claims a cofounder seat if ≤2 taken
+  Server-side invitations replace these at the backend milestone.
+
+Blocking: user.blocked[] — gates connection requests, buddy requests to that
+  person, and DMs (isBlocked checks BOTH directions). Blocking also declines
+  any pending connection between the pair.
+
+
+================================================================================
+6. ALL ROUTES & PAGES (hash router — apps/web/src/App.tsx)
+================================================================================
+Public:  #/ (Landing) · #/auth (+?mode=signup&ref=CODE) · #/u/:userId (public
+         profile) · #/join/:circleCode · #/discover (public discovery) ·
+         #/conduct #/privacy #/terms #/about #/accessibility (Policy page)
+App (login required, suspended gate):
+  #/app                    Dashboard (next actions, check-in, circles, events)
+  #/app/discover           Discovery + filters
+  #/app/events/new         Post event (public or circle-only)
+  #/app/events/:eventId    Event detail (RSVPs, backgrounds, buddy board,
+                           discussion, .ics, edit modal for owner/staff)
+  #/app/circles            Circles list + join by code
+  #/app/circles/:circleId  Circle detail (invite code, members, decisions,
+                           new decision modal, circle events, activity)
+  #/app/decisions/:id      THE DECISION ROOM (ballot, results, finalize, plan)
+  #/app/plans              All plans with confirm actions
+  #/app/people             Directory (founding first, then boost, filters)
+  #/app/people/:userId     Profile in-app (connect, vouch, trust chips, messages)
+  #/app/profile/edit       Profile + privacy editor
+  #/app/card               Networking card (QR + vCard QR + print CSS)
+  #/app/rewards            Momentum (streak calendar, level, badges, cosmetics)
+  #/app/referrals          Invite code/link, referral list, double-bonus explainer
+  #/app/pricing            Free now + research tiers + interest form
+  #/app/notifications      In-app notifications (bell in topbar)
+  #/app/settings           Notif prefs, export JSON, delete account, switch user
+  #/app/moderation         Staff-only report console
+  #/app/admin              Founder-team only: live telemetry, invite leaderboard,
+                           pulse feed, team invite links, accounts table (edit/
+                           roles/suspend), audit log
+  #/app/support            Support hub (buddy board, intent groups, layoff guidance)
+Mobile bottom nav: Home, Discover, Circles, People, You(settings). Desktop left
+rail shows everything incl. Moderation (staff) and Founder console (founder team).
+
+
+================================================================================
+7. STATE MANAGEMENT (apps/web/src/lib/store.ts — THE single swap point)
+================================================================================
+Pattern: module-level `let state` + subscribe() + useStore() via
+useSyncExternalStore. Every mutation goes through mutate(fn) which:
+structuredClone(state) → fn(next) → assign → debounced persist (250ms,
+localStorage `cc_state_v3`) → notify listeners. Components NEVER mutate state.
+
+Persistence + migration history (NEVER break old browsers):
+  cc_state_v1 (v0.1) → v2 added vouches+audit → v3 added pulse. load() tries
+  v3 key, then v2, then v1, backfills missing collections, stamps version 3.
+  Next migration: bump KEY, add backfill, keep the chain readable.
+
+Async auth: hashPassword = crypto.subtle SHA-256 of `salt:password`. login()
+checks suspended + deleted. loginDemo(userId) bypasses for demo:true accounts.
+switchUser() is a deliberate multi-account testing feature (Settings page).
+
+Action inventory (all validate then mutate; gates live HERE, never in JSX):
+  signup (claim codes, founding logic, welcome notification, pulse)
+  login / logout / loginDemo / switchUser / setAccent / setNotifPrefs / setTimezone
+  updateProfile / updatePrivacy / blockUser / unblockUser / isBlocked
+  postEvent (XP event_posted, pulse, circle notify) · updateEvent (material-change
+    propagation → plans review_needed + notifications) · toggleRsvp (curator badge)
+  createCircle / joinByInvite / rotateInviteCode / removeMember / leaveCircle
+  createDecision (2–8 candidates, deadline ≥ +1h, roster snapshot) · sweep()
+    (lazy deadline close + plan completion — called on every route change via
+    sweepIfDue) · submitBallot (deadline vs server-of-record = wall clock,
+    eligibility, favorite must be can/maybe, edit = overwrite) · finalizeDecision
+    (owner, closed only, eligibility = snapshot ∩ current members, override
+    rules, ONE plan) · respondPlan (2+ → confirmed, XP, notify) · setMeetupNote
+  postBuddyRequest / respondBuddy (mutual XP) / cancelBuddy
+  sendConnection (one pending per pair, 7-day cooldown after decline) ·
+    respondConnection (XP both, thread init) · sendMessage (accepted only,
+    block-checked) · postEventComment (threads key `event:<id>`)
+  submitReport / resolveReport (staff, audited, notifies both sides safely)
+  vouchUser / trustFor / sharedEvents / vouchTargets
+  adminUpdateUser / adminSetRole / adminSetSuspended (founder team, audited)
+  checkin / exportMyData / deleteAccount (pseudonymizes createdBy='deleted-user',
+    removes participation, transfers circle ownership) / saveInterestForm
+Selectors: publicEvents, myCircles, attendeesOf, backgroundAgg (privacy-aware
+  college/company counts), myOpenTasks, notificationsFor, levelInfo, adminStats
+  (13 metrics), referralLeaderboard, inviteLinkFor, conflictsForEvent (overlap
+  vs my RSVPs + confirmed plans), sharedEvents, vouchTargets, trustFor.
+
+
+================================================================================
+8. DESIGN SYSTEM ("Warm Constellations" — apps/web/src/styles/global.css)
+================================================================================
+Semantic tokens (light): page #F5F3ED · surface #FFFFFF · surface-2 #ECEFEA ·
+  ink #17291F · muted #536158 · accent #2449D8 (hover #1737B4) · on-accent #FFF ·
+  accent-soft #E9EEFF · coral #E98D73 · saffron #E6BC56 · sage #A9C4B2 ·
+  positive #24623D/#E8F3E9 · caution #795100/#FFF4D6 · danger #B32635/#FCE8EB ·
+  border #D9DFD6. Dark theme (html[data-theme="dark"]): page #111B16 · surface
+  #19271F · surface-2 #223229 · ink #F2F4EE · muted #B5C2B7 · accent #B7C8FF
+  (on-accent #14233D) · coral #F1B39D · saffron #EAD18E · sage #B2D5BD ·
+  border #3C5143. Accent themes via html[data-accent] overrides (coral/sage/
+  saffron). Theme = prefers-color-scheme unless localStorage 'cc-theme' set.
+Radii: controls 10px · cards 18px · art panels 28px · pills 999px.
+Type: Manrope (UI) + Fraunces (display) via Google Fonts, Georgia/system fallbacks;
+  tabular numerals for times/scores. Touch targets ≥ 44px; focus-visible rings.
+States are NEVER color-only — always text (+ icon). Decorative coral ≠ error.
+
+Logo: "Gather Mark" (Logo.tsx + favicon.svg + maskable.svg) — three nodes
+  (coral/saffron/sage) around an open shared center with two arcs. Animated
+  variant plays once (nodeIn + arc draw). Print: @media print shows only
+  .print-zone (the networking card, 85.6 × 54 mm).
+
+Motion system (§ components/motion.tsx + css block "motion system v2"):
+  <Reveal> (IntersectionObserver adds .in, stagger via --reveal-delay) ·
+  <CountUp> (rAF count on first intersect) · StarPrompt. CSS: .aurora hero wash,
+  .float-orb, .marquee (26s linear, pause on hover), .btn-primary::after shine
+  sweep, .result-banner.confirmed pop+glowRing, .flame pulse, .heart-pop,
+  .toast spring-in, .page-enter on <main key={route.path}>.
+  REDUCED MOTION: blanket kill-all block + explicit resets for .reveal/.aurora/
+  marquee/flame/heart-pop/shine. Any new animation MUST be covered there.
+
+Networking card (pages/CardPage.tsx): front card renders name/role/chips/links +
+  QR of profileUrl(user.id); vCard QR generated from profile fields. Print
+  button → window.print(). Card contents auto-respect privacy toggles.
+
+Accessibility bar: semantic HTML, labels on all controls, keyboard-complete,
+  aria-pressed on attendance buttons, alt text rules (meaningful vs empty),
+  contrast verified both themes. Never regress these.
+
+
+================================================================================
+9. KEY FLOWS (step-by-step — an edit must not break these)
+================================================================================
+SIGNUP: Auth page → signup() validates → claim code check → user created
+  (referral code generated) → founding/standard referral XP + boosts + badges →
+  notifications + pulse → navigate('/app'). New users get city '' → dashboard
+  nudges profile completion.
+
+VOTE: Circle detail → New decision modal (pick 2–8 candidates from public +
+  circle events, deadline ≥ +1h, optional live results) → Decision Room ballot:
+  per-candidate can/maybe/cannot buttons (aria-pressed), optional favorite
+  (only on can/maybe), clash warning + acknowledge checkbox when the candidate
+  overlaps my RSVPs/confirmed plans → submit (deadline-checked; editing
+  overwrites the ballot, XP once) → after deadline sweep() closes → owner sees
+  Results (formula + counts + quorum + warnings) and Finalize panel (auto-pick
+  top, or choose + override reason) → plan 'awaiting' → notifications → each
+  eligible person Confirms/Declines (XP on confirm) → ≥2 confirmations flip to
+  'confirmed' (+ pulse). Event edits/cancels flip live plans to review_needed.
+
+VOUCH: Event page attendee row (event started + shared record + no active
+  vouch) or profile page → VouchModal (pick shared event, hearts, claim
+  checkboxes from the target's actual public values, conduct chips, private
+  note) → vouchUser() gates → trust chips update everywhere (People cards show
+  ⭐ founding first, then boost).
+
+REFERRAL: Referrals page → copy link (#/auth?mode=signup&ref=CODE) or native
+  share → friend signs up → both sides XP/boosts; founder-team link → founding.
+
+ADMIN: Founder console = Live telemetry (adminStats via CountUp) + invite
+  leaderboard (referralLeaderboard) + team invite links + pulse feed + accounts
+  table (edit modal → adminUpdateUser; role buttons → adminSetRole; suspend →
+  adminSetSuspended) + audit log. All actions audited.
+
+EVENT EDIT: owner or staff → edit modal → updateEvent → material changes
+  propagate to plans (review_needed) + RSVP notifications. Cancel event →
+  plans canceled, participants notified.
+
+
+================================================================================
+10. PWA & SERVICE WORKER (apps/web/public/sw.js — CACHE = 'cc-shell-v2')
+================================================================================
+Navigations (mode==='navigate' or / or index.html): NETWORK-FIRST (deploy goes
+  live immediately; offline falls back to cache). Hashed assets: cache-first
+  with background update. Third-party origins untouched. install: precache
+  ./ + ./index.html, skipWaiting. activate: delete old caches, clients.claim.
+HISTORY LESSON (do not regress): v0.1 used cache-first navigations; after a
+  redeploy, returning visitors got a BLANK page (cached old index → deleted
+  bundle). If you touch sw.js, bump CACHE string and redeploy; if the live site
+  ever blanks after a deploy, it is the SW — unregister + clear caches, reload.
+Manifest: standalone, theme #17291F, bg #F5F3ED, SVG icons (any + maskable).
+
+
+================================================================================
+11. DEPLOYMENT RUNBOOK (verified, use exactly this)
+================================================================================
+Live host: GitHub Pages, source = `gh-pages` branch, root. Repo: under the
+authenticated gh account siddhant-pardeshi.
+
+Release procedure:
+  1) npm test                      # 27/27
+  2) npm run build                 # typecheck both workspaces + vite build → apps/web/dist
+  3) Browser-verify the built artifact (vite preview) — landing, one full user
+     journey, console (no errors), the specific new feature
+  4) git add -A && git commit && git push origin main
+  5) cd apps/web/dist && rm -rf .git && git init -b gh-pages && git add -A &&
+     git commit -m "Deploy: <version>" &&
+     git remote add origin https://github.com/siddhant-pardeshi/communityconnect.git &&
+     git push -f origin gh-pages
+  6) Wait ~40–60s; verify https://siddhant-pardeshi.github.io/communityconnect/
+     serves the new hashed bundle (curl the HTML, check asset filename) and do
+     one live browser check. If blank → service worker (see §10).
+  7) gh release create vX.Y.Z --title/--notes; attach
+     marketing/communityconnect-marketing-pack.zip + the two PDFs + a dist zip.
+  8) Bump version in ALL THREE package.json files (root, core, web) together.
+     Also update the rail footer version string in App.tsx.
+
+KNOWN CONSTRAINTS:
+- The GitHub token has 'repo' scope but NOT 'workflow' scope → .github/workflows/
+  are git-ignored locally and NOT pushed (push fails otherwise with "refusing to
+  allow an OAuth App to create or update workflow"). One-time fix:
+  `gh auth refresh -h github.com -s workflow` then
+  `git add .github && git commit -m "CI" && git push`.
+  The workflows (ci.yml, deploy.yml) are already written and already point at
+  apps/web paths. Until pushed, deploy via the gh-pages method above.
+- gh repo edit already set description/homepage/topics.
+
+TESTING LOOP DURING DEVELOPMENT:
+  npm run dev → http://localhost:5173. Multi-account testing: create 2+ accounts
+  in one browser and use Settings → Multi-account testing, or demo logins on the
+  landing page. When testing fresh seeds: localStorage.clear() then reload.
+  Preview builds: npx vite preview --port 4173 in apps/web.
+
+
+================================================================================
+12. TEST INVENTORY (packages/core/tests — 27 tests, keep them passing)
+================================================================================
+util.test.ts (7): half-open overlap (touching endpoints NOT overlapping),
+  cross-midnight overlap, invalid instants → false, reward week keys across
+  Sunday/Monday, dayKeyInTz IST edge (19:00Z = next day Kolkata),
+  daysBetweenKeys month boundaries.
+rules.test.ts (20): awardXp dedupe; daily cap 30 with event_posted; referral
+  exempt from cap + replay-safe; connection once-per-pair + 2/week; streak
+  start/same-day no-op/one-day grace (missed day's week)/second grace denied/
+  Sunday→Monday case; scoring formula 33.0 & 3.0 example + quorum; ties stay
+  ties; zero preference = no recommendation; blanks ≠ cannot; removed voters
+  excluded via eligible filter; referralOutcome self/duplicate/ok; isStaff/
+  isFounderTeam; canSetRole matrix + cofounderSlotsTaken cap; computeTrust
+  window counting + hasActiveVouch + empty-window clean slate.
+Add tests for every new pure rule. Tests import from '../src'.
+
+
+================================================================================
+13. MARKETING ASSETS (marketing/)
+================================================================================
+build_guides.py (ReportLab, Georgia/Verdana from C:\Windows\Fonts, brand palette)
+  → CommunityConnect-Founder-Guide.pdf (6 pages: overview, feature reference ×2,
+    founder runbook incl. team access codes + event playbook, metrics & limits)
+  → CommunityConnect-Flyer.pdf (A4: dark header, 3 steps, referral panel,
+    founder invite QR, footer with repo link). Rerun: `python build_guides.py`.
+assets/: qr-main.png, qr-founder-invite.png, qr-join-free.png (node qrcode,
+  900px), banner-og.png 1200×630, banner-square.png 1080×1080, banner-story.png
+  1080×1920 (rendered from src/*.html via browser screenshots, QRs inlined),
+  communityconnect-marketing-pack.zip. docs/assets/banner.svg = repo banner.
+Social copy angles: "Never event alone." / founding-member perks / star ask.
+Event-playbook ground rules (never violate): organizer permission first, no
+  attendee-list scraping, no mass DMs, demo the Decision Room in 60 seconds.
+
+
+================================================================================
+14. DECISION RECORDS (docs/adr/, indexed in docs/DECISIONS.md)
+================================================================================
+ADR-0001 monorepo with pure core (D1–D3 in DECISIONS.md cover the v0.1 stack
+  choice: SPA over a fake backend, browser-local storage, demo auth).
+ADR-0002 peer vouches: shared-event gating, rolling 14-day window, no XP,
+  concerns → moderation, one vouch per pair per window.
+ADR-0003 founder team: founder immutable, ≤2 cofounders, audited admin surface,
+  suspension rules.
+Update/extend ADRs for any significant future decision — that is the process.
+
+
+================================================================================
+15. HONEST LIMITS (state these, never paper over them)
+================================================================================
+- Data is PER BROWSER (localStorage). No cross-device sync, no server. The
+  Supabase swap is the next milestone: store.ts is the swap point; AppState
+  collections map 1:1 to tables; rules/util run server-side unchanged; auth
+  moves to the provider; RLS replaces client gates.
+- Demo auth (salted SHA-256 local) is deliberately demo-grade. Claim codes and
+  moderation run client-side. Do not present them as production security.
+- 'CommunityConnect' is not trademark-cleared; docs/BRAND.md holds the shortlist.
+- Demo seed data is fictional and labeled; never cite it as traction.
+- Pricing page collects interest only (local); no checkout exists.
+
+
+================================================================================
+16. WORKING CONVENTIONS FOR AI TOOLS (how to change this project safely)
+================================================================================
+Definition of done for ANY change:
+  1) npm run typecheck (both workspaces clean)
+  2) npm test (27+ passing)
+  3) npm run build (clean)
+  4) Browser-verify the affected journey on the built artifact
+  5) Update PROJECT_STATUS.md (append), docs/ACCEPTANCE_MATRIX.md (new rows),
+     and this file if rules/structure changed
+Adding a feature (the recipe, docs/ARCHITECTURE.md):
+  contract first (core/types) → policy second (core/rules + tests) → actions
+  third (store.ts, gates in the action not the JSX) → UI last → evidence.
+Style rules:
+  - Strict TS, no `any` in new code, comment the WHY not the what.
+  - Copy: warm, brief, honest. No fake data, no dark patterns, no emoji-only
+    states. Match existing voice (see §2 and current pages).
+  - New business rules MUST be pure functions in core with tests.
+  - New storage fields: bump cc_state key + add backfill in load() (§7).
+  - Privacy: every new user-facing field needs a privacy story (who sees it,
+    where to hide it) wired into privacy toggles + publicView().
+  - Windows/Git pitfalls: bash CWD locks directories (cd out before rm/mv of a
+    dir); nested .git in dist blocks git mv; avoid sed patterns containing
+    `||` (delimiter clash) — use Edit tools; apps/web/dist has a nested git
+    repo used only for the deploy push.
+  - Never push: founder prompt files (0*_*.txt), node_modules, dist to main.
+Backlog (agreed next steps, in order):
+  v0.4 Supabase swap (schema + RLS + auth; claim codes → invitations) →
+  notification outbox/email → P1 features from the master brief (calendar
+  free/busy, provider adapters, idea board) → multilingual copy.
+
+
+================================================================================
+END — if something is missing here, fix the code first, then add it here.
+================================================================================
