@@ -519,10 +519,16 @@ build_flyer.py (public, ReportLab, Georgia/Verdana from C:\Windows\Fonts, brand
 assets/: qr-main.png, qr-founder-invite.png, qr-join-free.png (node qrcode,
   900px), banner-og.png 1200×630, banner-square.png 1080×1080, banner-story.png
   1080×1920 (rendered from src/*.html via browser screenshots, QRs inlined),
+  screenshots/ (11 real app captures), CommunityConnect-User-Walkthrough.pdf
+  (13-page public tour), CommunityConnect-Feature-Deck.pptx (14-slide animated
+  public deck: slide transitions injected at OOXML level, emoji storytelling),
   communityconnect-marketing-pack.zip. docs/assets/banner.svg = repo banner.
-FOUNDER-PRIVATE DISTRIBUTION (outside the repo, never pushed): the founder's
-  operating manual PDF, the founder walkthrough PDF, their ReportLab builder,
-  FOUNDER_PRIVATE.md with the plaintext access codes and rotation instructions.
+CONFIDENTIAL DISTRIBUTION (outside the repo, never pushed):
+  C:\Users\siddh\Desktop\CommunityConnect-Confidential holds FOUNDER_PRIVATE.md
+  (plaintext access codes + rotation instructions), the founder operating manual
+  PDF, the founder walkthrough PDF, the founder briefing deck (12 slides incl.
+  circular team photos of Siddhant, Arya and Avani Jannawar + console screenshots
+  + current access codes), and the builders (build_walkthroughs.py, build_decks.js).
 Social copy angles: "Never event alone." / founding-member perks / star ask.
 Event-playbook ground rules (never violate): organizer permission first, no
   attendee-list scraping, no mass DMs, demo the Decision Room in 60 seconds.

@@ -220,6 +220,7 @@ export default function Landing() {
           <a href="#/terms">Terms</a>
           <a href="#/accessibility">Accessibility</a>
           <a href="https://github.com/siddhant-pardeshi/communityconnect/blob/main/marketing/CommunityConnect-User-Walkthrough.pdf" target="_blank" rel="noreferrer">Walkthrough 📖</a>
+          <a href="https://github.com/siddhant-pardeshi/communityconnect/blob/main/marketing/CommunityConnect-Feature-Deck.pptx" target="_blank" rel="noreferrer">Feature deck 🎞️</a>
           <a href="https://github.com/siddhant-pardeshi/communityconnect" target="_blank" rel="noreferrer">GitHub ⭐</a>
         </span>
       </footer>

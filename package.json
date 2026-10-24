@@ -1,7 +1,7 @@
 {
   "name": "communityconnect",
   "private": true,
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "CommunityConnect monorepo — Find your event. Bring your people.",
   "workspaces": [
     "apps/*",
