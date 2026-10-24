@@ -4,7 +4,7 @@ Last updated: 25 October 2026 · Release v0.1.0
 
 ## Where things stand
 
-**Live:** https://siddhant-pardeshi.github.io/communityconnect/ (GitHub Pages, deployed by GitHub Actions from `main`).
+**Live (verified 25 Oct 2026):** https://siddhant-pardeshi.github.io/communityconnect/ (GitHub Pages, deployed from the `gh-pages` branch).
 **Repo:** https://github.com/siddhant-pardeshi/communityconnect
 **Verified:** typecheck clean, 22/22 unit tests passing, production build successful, browser smoke test completed (landing → demo login → dashboard → ballot submission → QR card) on the built artifact.
 
