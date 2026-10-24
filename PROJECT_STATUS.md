@@ -80,3 +80,6 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - Data remains per-browser (documented v0.3 Supabase swap).
 - Trust window is client-enforced; server enforcement arrives with the backend.
 - An empty `app/` folder may linger on the maintainer's machine (held by an OS handle); it is not part of the repo.
+
+## Post-release fix (same day)
+- **PWA stale-cache bug caught in live verification:** the v0.1 service worker cached navigations cache-first, so returning visitors could get a blank page after a redeploy (old cached index → deleted bundle). Fix: `sw.js` rewritten to **network-first for navigations** with cache version bumped to `cc-shell-v2` (commit b286f07, redeployed to gh-pages). Returning visitors recover with one reload; new visitors unaffected.
