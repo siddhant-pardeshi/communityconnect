@@ -1,0 +1,11 @@
+# Local files only — never publish the founder's prompt pack
+00_START_HERE.txt
+01_COMMUNITYCONNECT_BUILD_AND_DEPLOY_SUPER_PROMPT.txt
+02_COMMUNITYCONNECT_FRONTEND_BRAND_AND_ANIMATION_PROMPT.txt
+
+# OS / editor
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build output (app/.gitignore covers the rest)
