@@ -1,9 +1,10 @@
 import { useState } from 'react';
-import { useStore, me, adminUpdateUser, adminSetRole, adminSetSuspended } from '../lib/store';
+import { useStore, me, adminUpdateUser, adminSetRole, adminSetSuspended, adminStats, referralLeaderboard, inviteLinkFor } from '../lib/store';
 import type { Intent, Privacy, SiteRole } from '@cc/core';
 import { INTENT_LABELS, isFounderTeam } from '@cc/core';
 import { timeAgo } from '@cc/core';
 import { Avatar, Btn, Card, Chip, EmptyState, Field, Modal, SectionHead, showToast } from '../components/ui';
+import { CountUp } from '../components/motion';
 import { Link } from '../router';
 
 const ROLE_CHIP: Record<SiteRole, { tone: 'accent' | 'positive' | 'caution' | 'outline'; label: string }> = {
@@ -11,6 +12,10 @@ const ROLE_CHIP: Record<SiteRole, { tone: 'accent' | 'positive' | 'caution' | 'o
   cofounder: { tone: 'positive', label: '⭐ Co-founder' },
   moderator: { tone: 'caution', label: '🛡️ Moderator' },
   member: { tone: 'outline', label: 'Member' },
+};
+
+const PULSE_ICON: Record<string, string> = {
+  signup: '🧑‍🚀', event: '📌', vouch: '🤝', plan: '🗓️', connection: '🔗', referral: '🎁', report: '🚩',
 };
 
 export default function AdminConsole() {
@@ -71,6 +76,104 @@ export default function AdminConsole() {
         title="👑 Founder console"
         sub={`Full administrative control — founder team: ${Object.values(s.users).filter((u) => isFounderTeam(u) && !u.deleted).map((u) => u.name.split(' ')[0]).join(', ')}. Every action is written to the audit log.`}
       />
+
+      {/* ── live telemetry ── */}
+      <Card style={{ borderColor: 'var(--accent)' }}>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <h3 style={{ margin: 0 }}>Live — everything happening on the platform</h3>
+          <Chip tone="positive">updated in real time</Chip>
+        </div>
+        {(() => {
+          const st = adminStats(s);
+          const cells: [string, number, string][] = [
+            ['Members', st.users, 'accounts'],
+            ['Joined today', st.usersToday, 'in the last 24h'],
+            ['Joined this week', st.users7d, 'last 7 days'],
+            ['Founding members', st.foundingMembers, 'via team invites'],
+            ['Live events', st.events, 'active listings'],
+            ['Attendance marks', st.rsvps, 'planning/registered'],
+            ['Open votes', st.openDecisions, 'decisions running'],
+            ['Ballots cast', st.votes, 'all decisions'],
+            ['Confirmed plans', st.confirmedPlans, '2+ confirmations'],
+            ['Vouches', st.vouches, 'peer trust signals'],
+            ['Hearts', st.hearts, 'given at events'],
+            ['Connections', st.connections, 'mutual'],
+            ['Open reports', st.openReports, 'need review'],
+          ];
+          return (
+            <div className="row" style={{ marginTop: 14, gap: 18 }}>
+              {cells.map(([label, n, sub]) => (
+                <div key={label} style={{ minWidth: 96 }}>
+                  <div className="stat-num" style={{ fontSize: 30 }}><CountUp to={n} duration={900} /></div>
+                  <div className="stat-label">{label}</div>
+                  <div className="small muted" style={{ fontSize: 11 }}>{sub}</div>
+                </div>
+              ))}
+            </div>
+          );
+        })()}
+      </Card>
+
+      {/* ── referral leaderboard ── */}
+      <Card>
+        <div className="row" style={{ justifyContent: 'space-between' }}>
+          <div>
+            <h3 style={{ margin: 0 }}>🏅 Invite leaderboard — who brought whom</h3>
+            <p className="small muted" style={{ margin: '4px 0 0' }}>
+              Every person who joins with someone’s link counts here. Founding members (your links) get permanent perks: +100 XP, all accent themes, top directory placement.
+            </p>
+          </div>
+        </div>
+        <div style={{ marginTop: 8 }}>
+          {referralLeaderboard(s).filter((r) => r.invites > 0).map((r, i) => (
+            <div key={r.user.id} className="list-row">
+              <span className="stat-num" style={{ fontSize: 22, minWidth: 34 }}>{i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : i + 1}</span>
+              <Avatar name={r.user.name} hue={r.user.avatarHue} size={30} />
+              <div style={{ flex: 1 }}>
+                <strong>{r.user.name}</strong>
+                {r.user.founding && <Chip tone="positive">⭐ founding</Chip>}
+                {r.boostActive && <Chip tone="boost">🚀 boosted</Chip>}
+                <p className="small muted" style={{ margin: 0 }}>
+                  brought {r.invitees.map((x) => x.name).join(', ') || '—'}
+                </p>
+              </div>
+              <span className="stat-num" style={{ fontSize: 24 }}>{r.invites}</span>
+            </div>
+          ))}
+          {referralLeaderboard(s).every((r) => r.invites === 0) && (
+            <p className="muted small">No invites accepted yet. Grab your link below and start with the crew you already have.</p>
+          )}
+        </div>
+        <hr className="divider" />
+        <h3>Your team invite links</h3>
+        <p className="small muted">People joining through these links become <strong>Founding Members</strong> — permanent perks keep them motivated to stay and invite others.</p>
+        {Object.values(s.users).filter((u) => isFounderTeam(u) && !u.deleted).map((u) => (
+          <div key={u.id} className="list-row">
+            <Avatar name={u.name} hue={u.avatarHue} size={30} />
+            <div style={{ flex: 1, minWidth: 200 }}>
+              <strong>{u.name}</strong> <span className="small muted">· code <span className="kbd">{u.referralCode}</span></span>
+              <p className="small muted" style={{ margin: 0, wordBreak: 'break-all' }}>{inviteLinkFor(u)}</p>
+            </div>
+            <Btn size="sm" variant="outline" onClick={() => { navigator.clipboard?.writeText(inviteLinkFor(u)); showToast(`Copied ${u.name.split(' ')[0]}'s invite link`); }}>Copy link</Btn>
+          </div>
+        ))}
+      </Card>
+
+      {/* ── live pulse feed ── */}
+      <Card>
+        <h3>⚡ Live pulse</h3>
+        {s.pulse.length === 0 ? (
+          <p className="muted small">Quiet for now — signups, events, vouches, plans and connections will stream here.</p>
+        ) : (
+          s.pulse.slice(0, 25).map((p) => (
+            <div key={p.id} className="list-row">
+              <span aria-hidden="true" style={{ fontSize: 17 }}>{PULSE_ICON[p.kind] ?? '•'}</span>
+              <p className="small" style={{ margin: 0, flex: 1 }}>{p.text}</p>
+              <span className="small muted">{timeAgo(p.at)}</span>
+            </div>
+          ))
+        )}
+      </Card>
 
       <Card>
         <div className="row" style={{ justifyContent: 'space-between' }}>

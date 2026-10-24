@@ -117,7 +117,7 @@ export function TrustChips({ userId }: { userId: string }) {
   }
   return (
     <div className="agg">
-      {t.hearts > 0 && <Chip tone="destructive">❤️ {t.hearts}</Chip>}
+      {t.hearts > 0 && <Chip tone="destructive"><span className="heart-pop">❤️ {t.hearts}</span></Chip>}
       {(['college', 'company', 'course'] as VouchClaim[]).map((k) => {
         const val = CLAIM_LABEL[k](u);
         if (!val || t.claims[k] === 0) return null;

@@ -59,7 +59,7 @@ export function buildSeed(): AppState {
       email: 'founder@communityconnect.app', passHash: 'seed-demo', salt: 'seed', createdAt: now - 45 * DAY,
       referralCode: 'SIDH-2026', streak: { lastDay: null, count: 0, graceWeek: null },
       xp: 500, ledger: [], badges: ['connector', 'first_plan'], accent: 'cobalt',
-      notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole: 'founder', demo: true,
+      notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole: 'founder', founding: true, demo: true,
     },
     {
       id: 'u_priya', name: 'Priya Nair', pronouns: 'she/her', city: 'Bengaluru', timezone: 'Asia/Kolkata',
@@ -71,7 +71,7 @@ export function buildSeed(): AppState {
       email: 'priya@communityconnect.app', passHash: 'seed-demo', salt: 'seed', createdAt: now - 44 * DAY,
       referralCode: 'PRIY-7302', streak: { lastDay: null, count: 0, graceWeek: null },
       xp: 300, ledger: [], badges: ['connector'], accent: 'sage',
-      notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole: 'cofounder', demo: true,
+      notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole: 'cofounder', founding: true, demo: true,
     },
     {
       id: 'u_rohan', name: 'Rohan Gupta', pronouns: 'he/him', city: 'Bengaluru', timezone: 'Asia/Kolkata',
@@ -83,7 +83,7 @@ export function buildSeed(): AppState {
       email: 'rohan@communityconnect.app', passHash: 'seed-demo', salt: 'seed', createdAt: now - 44 * DAY,
       referralCode: 'ROHA-9184', streak: { lastDay: null, count: 0, graceWeek: null },
       xp: 300, ledger: [], badges: ['curator'], accent: 'coral',
-      notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole: 'cofounder', demo: true,
+      notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole: 'cofounder', founding: true, demo: true,
     },
     {
       id: 'u_aarav', name: 'Aarav Shah', pronouns: 'he/him', city: 'Bengaluru', timezone: 'Asia/Kolkata',
@@ -291,6 +291,11 @@ export function buildSeed(): AppState {
     buddyRequests,
     notifications,
     reports,
+    pulse: [
+      { id: 'pl1', kind: 'vouch', text: 'Meera vouched for Aarav at Indie Hackers Mixer', at: now - 5 * DAY },
+      { id: 'pl2', kind: 'plan', text: 'Design & Coffee confirmed a plan — Design Systems Meetup', at: now - DAY },
+      { id: 'pl3', kind: 'signup', text: 'Ananya Rao joined with Meera2019s invite', at: now - 12 * DAY },
+    ],
     vouches: [...vouches],
     audit,
     interestForms: [],

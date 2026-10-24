@@ -37,6 +37,7 @@ export function levelOf(xp: number): { name: string; min: number; next?: { name:
 }
 
 export const BADGES: Record<string, { label: string; how: string }> = {
+  founding: { label: 'Founding Member', how: 'Joined through a founder-team invite during launch.' },
   first_plan: { label: 'First Plan', how: 'A plan you joined was confirmed.' },
   connector: { label: 'Connector', how: 'Invited a friend who joined CommunityConnect.' },
   vote_starter: { label: 'First Vote', how: 'Cast your first decision ballot.' },
@@ -302,4 +303,19 @@ export function computeTrust(allVouches: Vouch[], userId: string, now = Date.now
 export function hasActiveVouch(allVouches: Vouch[], from: string, to: string, now = Date.now()): boolean {
   const cutoff = now - TRUST_WINDOW_DAYS * 86400000;
   return allVouches.some((v) => v.from === from && v.to === to && v.at > cutoff);
+}
+
+// ─── founding members & growth ───────────────────────────────────────────────
+/** People who join through a founder-team invite get permanent founding perks. */
+export const FOUNDING_PERKS = {
+  welcomeXp: 100,          // vs +75 for a standard referral
+  allAccents: true,        // every profile accent unlocked from day one
+  directoryPriority: true, // surfaced first in the People directory
+  badge: 'founding',
+} as const;
+
+export const FOUNDING_BADGE_LABEL = 'Founding Member';
+
+export function isFoundingReferrer(referrer: UserAccount | undefined): boolean {
+  return !!referrer && isFounderTeam(referrer);
 }

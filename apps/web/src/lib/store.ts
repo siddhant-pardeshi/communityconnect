@@ -5,20 +5,21 @@ import type {
 import {
   buildSeed, awardXp, canAwardConnection, applyCheckin, scoreDecision, XP_RULES,
   uid, pairKeyOf, makeReferralCode, overlaps, isStaff, isFounderTeam, canSetRole, levelOf,
+  FOUNDER_CLAIM_CODE, COFOUNDER_CLAIM_CODE, isFoundingReferrer, FOUNDING_PERKS,
   cofounderSlotsTaken, MAX_COFOUNDERS, VOUCH_CLAIMS, hasActiveVouch, TRUST_WINDOW_DAYS, computeTrust,
 } from '@cc/core';
 
 // ─── persistence ─────────────────────────────────────────────────────────────
-const KEY = 'cc_state_v2';
+const KEY = 'cc_state_v3';
 
 function load(): AppState {
   try {
     // v1 → v2 migration: backfill the vouches/audit collections, then persist under the new key.
-    const raw = localStorage.getItem(KEY) ?? localStorage.getItem('cc_state_v1');
+    const raw = localStorage.getItem(KEY) ?? localStorage.getItem('cc_state_v2') ?? localStorage.getItem('cc_state_v1');
     if (raw) {
       const parsed = JSON.parse(raw) as AppState;
       if (parsed && parsed.users) {
-        return { ...parsed, vouches: parsed.vouches ?? [], audit: parsed.audit ?? [], version: 2 };
+        return { ...parsed, vouches: parsed.vouches ?? [], audit: parsed.audit ?? [], pulse: parsed.pulse ?? [], version: 3 };
       }
     }
   } catch { /* corrupt state → reseed */ }
@@ -86,6 +87,7 @@ export interface SignupInput {
   acceptedConduct: boolean;
   refCode?: string;
   college?: string; company?: string;
+  claimCode?: string;        // founder-team access code → claims founder/co-founder role
 }
 
 export async function signup(input: SignupInput): Promise<{ ok: boolean; error?: string }> {
@@ -106,6 +108,24 @@ export async function signup(input: SignupInput): Promise<{ ok: boolean; error?:
     const code = input.refCode.trim().toUpperCase();
     referrer = Object.values(state.users).find((u) => u.referralCode.toUpperCase() === code);
   }
+  // Team claim codes: founder (if the seat is open) or co-founder (max 2). These are
+  // launch-phase convenience codes — server-side invitations replace them in v0.3.
+  let claim: 'founder' | 'cofounder' | null = null;
+  const code = (input.claimCode ?? '').trim().toUpperCase();
+  if (code === FOUNDER_CLAIM_CODE.toUpperCase()) {
+    if (Object.values(state.users).some((u) => u.siteRole === 'founder')) {
+      return { ok: false, error: 'The founder seat is already claimed in this workspace.' };
+    }
+    claim = 'founder';
+  } else if (code === COFOUNDER_CLAIM_CODE.toUpperCase()) {
+    if (cofounderSlotsTaken(Object.values(state.users)) >= MAX_COFOUNDERS) {
+      return { ok: false, error: `Both co-founder seats are taken.` };
+    }
+    claim = 'cofounder';
+  } else if (code) {
+    return { ok: false, error: 'That team access code is not valid.' };
+  }
+  const founding = isFoundingReferrer(referrer) || claim !== null;
   const user: UserAccount = {
     id, name, city: '', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     intents: [], links: [], avatarHue: Math.floor(Math.random() * 360),
@@ -115,9 +135,10 @@ export async function signup(input: SignupInput): Promise<{ ok: boolean; error?:
     referredBy: referrer?.id,
     boostUntil: referrer ? Date.now() + 7 * 86400000 : undefined, // welcome boost for invited friends
     streak: { lastDay: null, count: 0, graceWeek: null },
-    xp: 0, ledger: [], badges: [], accent: 'cobalt',
+    xp: 0, ledger: [], badges: founding ? ['founding'] : [], accent: 'cobalt',
     notifPrefs: { decisions: true, connections: true, plans: true, events: true },
-    siteRole: 'member',
+    siteRole: claim ?? 'member',
+    founding,
   };
   mutate((s) => {
     s.users[id] = user;
@@ -127,18 +148,32 @@ export async function signup(input: SignupInput): Promise<{ ok: boolean; error?:
       body: 'Pick your interests, join a circle, and post or find your first event. Everything is free while we grow.',
       link: '#/app/profile/edit',
     });
+    if (founding) {
+      addXp(s, id, 'referral', `ref:${id}`);
+      notify(s, id, {
+        type: 'referral', title: '⭐ Founding member unlocked',
+        body: 'You get +100 XP, every profile accent from day one, top placement in the People directory, and the Founding Member badge — permanent.',
+        link: '#/app/rewards',
+      });
+      s.pulse.unshift({ id: uid('pl'), kind: 'referral', text: `${name} joined as a Founding Member`, at: Date.now() });
+    }
+    if (claim) {
+      s.audit.unshift({ id: uid('aud'), actorId: id, action: 'role_claim', targetId: id, detail: `Claimed ${claim} via team access code`, at: Date.now() });
+    }
     if (referrer && s.users[referrer.id]) {
       const r = s.users[referrer.id];
+      if (!founding) addXp(s, id, 'referral', `ref:${id}`);
       addXp(s, r.id, 'referral', `ref:${id}`);
-      addXp(s, id, 'referral', `ref:${id}`);
       r.boostUntil = Date.now() + 14 * 86400000;
       if (!r.badges.includes('connector')) r.badges.push('connector');
       notify(s, r.id, {
         type: 'referral', title: `${name} joined with your referral 🎉`,
-        body: `You both earned +${XP_RULES.referral} XP and your profile is boosted for 14 days.`,
+        body: `You both earned bonus XP and your profile is boosted for 14 days.`,
         link: '#/app/rewards',
       });
+      s.pulse.unshift({ id: uid('pl'), kind: 'referral', text: `${name} joined with ${r.name}'s invite`, at: Date.now() });
     }
+    if (s.pulse.length > 120) s.pulse.length = 120;
   });
   return { ok: true };
 }
@@ -249,6 +284,7 @@ export function postEvent(input: EventInput): { ok: boolean; error?: string; eve
       createdBy: u.id, status: 'active', moderation: 'approved', createdAt: Date.now(),
     };
     s.events[id] = ev;
+    pulseLog(s, 'event', `${u.name} posted “${ev.title}”`);
     if (input.visibility === 'circle' && input.circleId) {
       const c = s.circles[input.circleId];
       if (c) {
@@ -540,6 +576,7 @@ export function respondPlan(decisionId: string, choice: 'confirmed' | 'declined'
         const others = Object.keys(plan.confirmations).filter((k) => k !== u.id);
         others.forEach((m) => notify(s, m, { type: 'plan', title: 'Group plan confirmed ✅', body: `${u.name} confirmed — you have enough people. Register on the organizer site if needed.`, link: `#/app/decisions/${decisionId}` }));
         s.activity.unshift({ id: uid('a'), circleId: plan.circleId, actorId: u.id, text: 'confirmed the plan — it is now a confirmed group plan.', at: Date.now() });
+        pulseLog(s, 'plan', `${s.circles[plan.circleId]?.name ?? 'A circle'} confirmed a plan — ${s.events[plan.eventId]?.title ?? ''}`);
       }
     }
     const owner = s.circles[plan.circleId]?.ownerId;
@@ -639,6 +676,7 @@ export function respondConnection(id: string, accept: boolean) {
     if (accept) {
       const pk = pairKeyOf(c.from, c.to);
       if (!s.threads[pk]) s.threads[pk] = [];
+      pulseLog(s, 'connection', `${u.name} and ${s.users[c.from]?.name ?? 'a member'} connected`);
       for (const party of [c.from, c.to]) {
         if (canAwardConnection(s.users[party].ledger, pk)) addXp(s, party, 'connection', `conn:${pk}`);
       }
@@ -669,6 +707,7 @@ export function submitReport(kind: 'event' | 'user' | 'message', targetId: strin
   if (!u) return { ok: false, error: 'Log in first.' };
   mutate((s) => {
     s.reports.unshift({ id: uid('rep'), kind, targetId, reporterId: u.id, reason, detail: detail.trim(), status: 'received', createdAt: Date.now() });
+    pulseLog(s, 'report', 'A new report was filed — moderator review needed');
   });
   return { ok: true };
 }
@@ -892,6 +931,7 @@ export function vouchUser(targetId: string, eventId: string, input: VouchInput):
       at: Date.now(),
     };
     s.vouches.unshift(v);
+    pulseLog(s, 'vouch', `${u.name} vouched for ${s.users[targetId]?.name ?? 'a member'}`);
     notify(s, targetId, {
       type: 'connection', title: `${u.name} vouched for you 🤝`,
       body: 'Hearts and peer-verified claims now show on your profile for the next 14 days.',
@@ -970,4 +1010,65 @@ export function adminSetSuspended(targetId: string, suspended: boolean): { ok: b
     if (suspended && s.currentUserId === targetId) s.currentUserId = null;
   });
   return { ok: true };
+}
+
+// ─── live pulse (founder console telemetry) ──────────────────────────────────
+function pulseLog(s: AppState, kind: import('@cc/core').PulseEvent['kind'], text: string) {
+  s.pulse.unshift({ id: uid('pl'), kind, text, at: Date.now() });
+  if (s.pulse.length > 120) s.pulse.length = 120;
+}
+
+export interface AdminStats {
+  users: number; usersToday: number; users7d: number;
+  events: number; rsvps: number;
+  openDecisions: number; votes: number; confirmedPlans: number;
+  vouches: number; hearts: number; connections: number;
+  openReports: number; foundingMembers: number;
+}
+
+export function adminStats(s: AppState): AdminStats {
+  const now = Date.now();
+  const users = Object.values(s.users).filter((u) => !u.deleted);
+  const countSince = (ms: number) => users.filter((u) => u.createdAt > now - ms).length;
+  return {
+    users: users.length,
+    usersToday: countSince(86400000),
+    users7d: countSince(7 * 86400000),
+    events: Object.values(s.events).filter((e) => e.status === 'active').length,
+    rsvps: s.rsvps.length,
+    openDecisions: Object.values(s.decisions).filter((d) => d.status === 'open').length,
+    votes: Object.values(s.decisions).reduce((n, d) => n + d.ballots.length, 0),
+    confirmedPlans: Object.values(s.decisions).filter((d) => d.plan?.status === 'confirmed').length,
+    vouches: s.vouches.length,
+    hearts: s.vouches.filter((v) => v.hearts).length,
+    connections: s.connections.filter((c) => c.status === 'accepted').length,
+    openReports: s.reports.filter((r) => r.status === 'received').length,
+    foundingMembers: users.filter((u) => u.founding).length,
+  };
+}
+
+export interface ReferralRow {
+  user: UserAccount;
+  invites: number;
+  invitees: UserAccount[];
+  boostActive: boolean;
+}
+
+/** "Who brought how many people" — sorted leaderboard of referral links. */
+export function referralLeaderboard(s: AppState): ReferralRow[] {
+  const rows = Object.values(s.users)
+    .filter((u) => !u.deleted)
+    .map((u) => ({
+      user: u,
+      invitees: Object.values(s.users).filter((x) => x.referredBy === u.id && !x.deleted),
+      boostActive: !!u.boostUntil && u.boostUntil > Date.now(),
+    }))
+    .map((r) => ({ ...r, invites: r.invitees.length }))
+    .sort((a, b) => b.invites - a.invites || b.user.xp - a.user.xp);
+  return rows;
+}
+
+export function inviteLinkFor(u: UserAccount): string {
+  const base = `${window.location.origin}${window.location.pathname}`;
+  return `${base}#/auth?mode=signup&ref=${u.referralCode}`;
 }

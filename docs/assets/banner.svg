@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-label="CommunityConnect — Find your event. Bring your people.">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111B16"/>
+      <stop offset="0.6" stop-color="#17291F"/>
+      <stop offset="1" stop-color="#1B2A46"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#B7C8FF"/>
+      <stop offset="1" stop-color="#E98D73"/>
+    </linearGradient>
+    <radialGradient id="glow1" cx="0.18" cy="0.3" r="0.5">
+      <stop offset="0" stop-color="#2449D8" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#2449D8" stop-opacity="0"/>
+    </radialGradient>
+    <radialGradient id="glow2" cx="0.85" cy="0.8" r="0.5">
+      <stop offset="0" stop-color="#E98D73" stop-opacity="0.22"/>
+      <stop offset="1" stop-color="#E98D73" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1200" height="300" fill="url(#bg)"/>
+  <rect width="1200" height="300" fill="url(#glow1)"/>
+  <rect width="1200" height="300" fill="url(#glow2)"/>
+
+  <!-- connecting arcs -->
+  <g fill="none" stroke="#E9EEFF" stroke-opacity="0.35" stroke-width="2">
+    <path d="M120 70 C 210 110, 300 150, 380 170"/>
+    <path d="M1000 230 C 920 190, 840 160, 760 150"/>
+  </g>
+
+  <!-- gather mark -->
+  <g transform="translate(78,84)">
+    <circle cx="0" cy="0" r="16" fill="#E98D73"/>
+    <circle cx="52" cy="0" r="16" fill="#E6BC56"/>
+    <circle cx="26" cy="46" r="16" fill="#A9C4B2"/>
+    <circle cx="26" cy="20" r="11" fill="#F5F3ED"/>
+    <path d="M8 6 C 18 14, 34 14, 44 6" stroke="#E9EEFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
+    <path d="M8 40 C 18 32, 34 32, 44 40" stroke="#E9EEFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
+  </g>
+
+  <!-- wordmark -->
+  <text x="190" y="140" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#F2F4EE" letter-spacing="-1">Community<tspan fill="#B7C8FF">Connect</tspan></text>
+  <text x="193" y="186" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-style="italic" fill="url(#accent)">Find your event. Bring your people.</text>
+
+  <!-- feature chips -->
+  <g font-family="Verdana, 'Segoe UI', sans-serif" font-size="15" font-weight="bold">
+    <g><rect x="193" y="212" rx="15" width="150" height="30" fill="#223229" stroke="#3C5143"/><text x="208" y="232" fill="#B5C2B7">🗳 Decision Rooms</text></g>
+    <g><rect x="355" y="212" rx="15" width="140" height="30" fill="#223229" stroke="#3C5143"/><text x="370" y="232" fill="#B5C2B7">🎁 Referral XP</text></g>
+    <g><rect x="507" y="212" rx="15" width="140" height="30" fill="#223229" stroke="#3C5143"/><text x="522" y="232" fill="#B5C2B7">🪪 QR cards</text></g>
+    <g><rect x="659" y="212" rx="15" width="128" height="30" fill="#223229" stroke="#3C5143"/><text x="674" y="232" fill="#B5C2B7">🤝 Vouches</text></g>
+    <g><rect x="799" y="212" rx="15" width="170" height="30" fill="#223229" stroke="#3C5143"/><text x="814" y="232" fill="#B5C2B7">🌱 Support hub</text></g>
+  </g>
+
+  <!-- right-side node constellation -->
+  <g>
+    <circle cx="1035" cy="90" r="14" fill="#E98D73"/>
+    <circle cx="1105" cy="70" r="11" fill="#E6BC56"/>
+    <circle cx="1140" cy="140" r="12" fill="#A9C4B2"/>
+    <circle cx="1055" cy="170" r="9" fill="#B7C8FF"/>
+    <path d="M1044 98 L1096 76 M1114 80 L1133 130 M1128 148 L1064 166" stroke="#E9EEFF" stroke-opacity="0.5" stroke-width="2" fill="none"/>
+  </g>
+  <text x="1030" y="232" font-family="Verdana, sans-serif" font-size="14" fill="#B5C2B7">free while we grow · Apache-2.0</text>
+</svg>

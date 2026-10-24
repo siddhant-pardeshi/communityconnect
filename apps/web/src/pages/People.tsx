@@ -22,7 +22,7 @@ export default function People() {
     .filter((u) => u.id !== user.id && !u.deleted && u.privacy.directoryOptIn && !isBlocked(s, user.id, u.id))
     .filter((u) => (q ? `${u.name} ${u.role ?? ''} ${u.college ?? ''} ${u.company ?? ''}`.toLowerCase().includes(q.toLowerCase()) : true))
     .filter((u) => (intent ? u.intents.includes(intent) : true))
-    .sort((a, b) => (b.boostUntil ?? 0) - (a.boostUntil ?? 0));
+    .sort((a, b) => Number(b.founding ?? false) - Number(a.founding ?? false) || (b.boostUntil ?? 0) - (a.boostUntil ?? 0));
 
   const incoming = s.connections.filter((c) => c.to === user.id && c.status === 'pending');
   const myConnections = s.connections.filter((c) => c.status === 'accepted' && c.pairKey.includes(user.id));
@@ -48,7 +48,7 @@ export default function People() {
               <div key={c.id} className="list-row">
                 <Avatar name={u.name} hue={u.avatarHue} />
                 <div style={{ flex: 1 }}>
-                  <strong>{u.name}</strong> <span className="small muted">· {timeAgo(c.createdAt)}</span>
+                  <strong>{u.name}</strong>{u.founding && <> <Chip tone="positive" title="Joined via a founder-team invite">⭐ founding</Chip></>} <span className="small muted">· {timeAgo(c.createdAt)}</span>
                   <p className="small" style={{ margin: '2px 0 0' }}>“{c.reason}”</p>
                 </div>
                 <div className="row">
@@ -74,7 +74,7 @@ export default function People() {
               <div key={c.id} className="list-row">
                 <Avatar name={u.name} hue={u.avatarHue} />
                 <div style={{ flex: 1 }}>
-                  <strong>{u.name}</strong>
+                  <strong>{u.name}</strong>{u.founding && <> <Chip tone="positive" title="Joined via a founder-team invite">⭐ founding</Chip></>}
                   <span className="small muted"> · connected {timeAgo(c.respondedAt ?? c.createdAt)}</span>
                   {thread.length > 0 && <p className="small muted" style={{ margin: '2px 0 0' }}>Last message {timeAgo(thread[thread.length - 1].at)}</p>}
                 </div>
@@ -111,7 +111,7 @@ export default function People() {
                   <div className="row" style={{ gap: 10 }}>
                     <Avatar name={u.name} hue={u.avatarHue} size={42} />
                     <div>
-                      <strong>{u.name}</strong>
+                      <strong>{u.name}</strong>{u.founding && <> <Chip tone="positive" title="Joined via a founder-team invite">⭐ founding</Chip></>}
                       {u.boostUntil && u.boostUntil > Date.now() && <> <Chip tone="boost" title="Boosted for inviting friends">🚀 boosted</Chip></>}
                       <p className="small muted" style={{ margin: 0 }}>{u.role ?? 'Member'}{u.city ? ` · ${u.city}` : ''}</p>
                     </div>

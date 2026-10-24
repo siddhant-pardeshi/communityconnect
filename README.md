@@ -1,76 +1,92 @@
-# CommunityConnect
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="CommunityConnect — Find your event. Bring your people." width="100%" />
+</p>
 
-**Find your event. Bring your people.**
+<h1 align="center">CommunityConnect</h1>
 
-CommunityConnect turns scattered event links into confirmed group plans and useful professional relationships. Share the options, spot the clashes, decide together in a **Decision Room**, and show up with company — students, professionals, job seekers, founders, and communities.
+<p align="center">
+  <a href="https://siddhant-pardeshi.github.io/communityconnect/">Live app</a> ·
+  <a href="docs/ARCHITECTURE.md">Architecture</a> ·
+  <a href="PROJECT_STATUS.md">Status</a> ·
+  <a href="docs/LAUNCH_PLAYBOOK.md">Launch playbook</a> ·
+  <a href="CODE_OF_CONDUCT.md">Conduct</a>
+</p>
 
-🔗 **Live app:** https://siddhant-pardeshi.github.io/communityconnect/
+<p align="center">
+  <a href="#license"><img alt="license" src="https://img.shields.io/badge/license-Apache--2.0-2449D8"></a>
+  <a href="https://siddhant-pardeshi.github.io/communityconnect/"><img alt="live" src="https://img.shields.io/website?url=https%3A%2F%2Fsiddhant-pardeshi.github.io%2Fcommunityconnect%2F"></a>
+  <img alt="tests" src="https://img.shields.io/badge/tests-27%20passing-24623D">
+  <img alt="version" src="https://img.shields.io/badge/version-0.3.0-17291F">
+</p>
 
 ---
 
-## What works today (v0.2.0)
+A group chat has three event links and no decision. CommunityConnect turns those links into one
+plan: a circle votes can/maybe/cannot before a deadline, clashes surface on their own, and a single
+event gets confirmed — with a buddy if someone wants company.
 
-| Area | Status |
-|---|---|
-| Landing page, marketing site, policy pages | ✅ Live |
-| Accounts (browser-local, salted+hashed) with demo profiles | ✅ Live |
-| Event discovery, search & filters, manual posting with source links | ✅ Live |
-| Events: save/plan/register-self-report, corrections & cancellation with participant notifications | ✅ Live |
-| “Who’s in” — attendee backgrounds (college/company) with per-person privacy toggles | ✅ Live |
-| Circles with revocable invite codes, roles, activity feed | ✅ Live |
-| **Decision Rooms**: ballots (can/maybe/cannot + favorite), server-style deadline enforcement, 60% quorum, disclosed scoring formula, tie/override handling, finalized plans | ✅ Live |
-| Plans: independent confirmations (2+ required), review-needed on material changes, .ics export, meetup notes | ✅ Live |
-| Buddy board: opt-in requests, mutual acceptance, private cancellation | ✅ Live |
-| People directory with intent chips (open-to-work, seeking-referrals, hiring, between-roles) | ✅ Live |
-| Connections: reasoned requests, mutual acceptance, private messaging, blocking | ✅ Live |
-| **Referral program**: +75 XP to both sides, 14-day boost for referrer, welcome boost for friend | ✅ Live |
-| **Networking card**: printable 85.6×54 mm card with QR + vCard QR, privacy-aware | ✅ Live |
-| Momentum: gentle streaks with weekly grace, contribution XP with daily caps, cosmetic unlocks | ✅ Live |
-| Reporting + moderation console with recorded outcomes | ✅ Live |
-| **Peer trust & vouches**: hearts, peer-verification of college/company/course claims, conduct signals — rolling 14-day window so records refresh and conduct can improve | ✅ Live |
-| **Founder console**: founder + up to 2 co-founders with full control — edit any account, grant team roles (moderator/co-founder), suspend, append-only audit log | ✅ Live |
-| PWA install (all devices) + offline shell | ✅ Live |
-| In-app notifications + preferences | ✅ Live |
-| Data export & account deletion | ✅ Live |
+It is free while the platform grows. Planning, voting, buddy matching, connections, safety tools
+and the networking card cost nothing, and they stay free by policy.
 
-**Known limitation (honest):** this release persists data **per browser** (localStorage). It is a complete, working product for trying every journey — including multi-account flows via Settings → “Multi-account testing”. Cross-device, server-backed accounts are the next milestone: the data layer maps 1:1 onto the documented Supabase schema swap (see `docs/DECISIONS.md`). No fabricated backend claims are made.
+## The loop
 
-## Quick start (local)
-
-```bash
-npm install         # installs both workspaces
-npm run dev         # http://localhost:5173
-npm test            # vitest across workspaces
-npm run build       # typecheck (all) + production build
+```
+discover / post  →  shortlist in a circle  →  vote  →  finalize  →  confirm  →  attend  →  vouch  →  repeat
 ```
 
-Demo data (11 events, 9 fictional profiles incl. the founder team, 2 circles, 3 decisions, vouches, seeded plans/buddy requests) loads automatically and is labeled **DEMO DATA** — or use the one-click “Explore as …” demo profiles (Founder, Aarav, Meera, Ananya) on the landing page.
+- **Decision Rooms** — hard deadline enforced, 60% quorum, a published scoring formula
+  (`100 × (0.65·can + 0.15·maybe + 0.20·favorite) / roster`), honest ties, no vote ever visible
+  before close, one plan that needs two independent confirmations.
+- **Circles** — private rooms, revocable invite codes, circle-only events that never leak into
+  public search or share previews.
+- **Peer vouches** — after an event, participants give hearts, verify each other's
+  college/company/course claims, and record polite/professional conduct. Vouches count for a
+  rolling 14 days, then fade: records renew and conduct can improve.
+- **Referrals** — a join through your link pays both sides XP and boosts. Joins through
+  founder-team links create *Founding Members* with permanent perks.
+- **Networking card** — a printable 85.6 × 54 mm card with a QR to your live profile; privacy
+  settings respected everywhere, including in print.
+- **Founder console** — the founder and two co-founders see live platform telemetry, an invite
+  leaderboard (who brought whom), a pulse feed, and an audited admin surface.
+
+## Try it
+
+Open [the live app](https://siddhant-pardeshi.github.io/communityconnect/) and use a demo profile
+(Founder view / Aarav / Meera / Ananya) — no signup. The demo dataset is fictional and labeled.
+
+## Development
+
+```bash
+npm install         # workspaces: @cc/core + @cc/web
+npm run dev         # http://localhost:5173
+npm test            # 27 unit tests across workspaces
+npm run build       # typecheck (both) + production build
+```
+
+| Path | What lives there |
+|---|---|
+| `packages/core` | Pure domain: types, XP/scoring/trust/role rules, time & .ics math, seed — no React, no DOM |
+| `apps/web` | React SPA: store (single mutation point), 25 screens, design system, PWA shell |
+| `marketing/` | Print-ready flyer PDF, founder's manual PDF, QR codes, social banners, build scripts |
+| `docs/` | Architecture, ADRs, acceptance matrix, launch playbook, business model, brand shortlist |
+
+Dependency direction is one-way: `@cc/core` imports nothing from the app, so a server backend can
+reuse every rule unchanged. The store (`apps/web/src/lib/store.ts`) is the single swap point — see
+[docs/DECISIONS.md](docs/DECISIONS.md).
+
+## Current scope, stated plainly
+
+Accounts and data live **per browser** in this release; the demo auth is salted-and-hashed local
+storage. Multi-device sync, server-side auth, and email are the next milestone (Supabase swap,
+schema mapping already written). "CommunityConnect" is a working name — not yet trademark-cleared.
 
 ## Deployment
 
-- **Live:** GitHub Pages via GitHub Actions (`.github/workflows/deploy.yml`) — builds on every push to `main` and deploys the `dist/` artifact.
-- **Any static host works:** `npm run build` produces a self-contained `dist/` (relative base, hash routing).
-- **Self-hosting / server backend:** the documented upgrade path is Supabase (auth, Postgres + RLS, storage). The store layer (`app/src/lib/store.ts`) is the single swap point.
+The live site deploys from the `gh-pages` branch. GitHub Actions workflows for CI + Pages are in
+`.github/workflows/` and go live once the maintainer's token carries the `workflow` scope (one
+command, documented in [PROJECT_STATUS.md](PROJECT_STATUS.md)). Any static host works:
+`npm run build` and serve `apps/web/dist`.
 
-## Repository map (enterprise monorepo)
+## License
 
-```
-packages/core/     @cc/core — pure domain: types, rules (XP/scoring/trust/roles), time/overlap/ics, seed + tests
-apps/web/          @cc/web  — React SPA: store (state+actions), 25 screens, design system, PWA
-docs/              ARCHITECTURE, DECISIONS + adr/, ACCEPTANCE_MATRIX, LAUNCH_PLAYBOOK, BUSINESS_MODEL, BRAND
-.github/           CI + Pages deploy workflows (see PROJECT_STATUS for the token-scope note)
-```
-
-Dependency direction is one-way: `@cc/core` is pure (no React/DOM/storage) so the future backend reuses it unchanged. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
-
-## Contributing, safety & license
-
-- Contributing: [CONTRIBUTING.md](CONTRIBUTING.md) · Security: [SECURITY.md](SECURITY.md)
-- Conduct: [CODE_OF_CONDUCT.md](CODE_OF_CONDUCT.md) (enforced in-app with a moderation console)
-- License: Apache-2.0 — see [LICENSE](LICENSE)
-- “CommunityConnect” is a working name; no trademark/domain clearance has been performed.
-- No invented user counts, testimonials, or endorsements appear anywhere in this product.
-
-## North-star
-
-Weekly newly confirmed group plans — not screen time. The product succeeds when people make plans and meet.
+Apache-2.0. See [LICENSE](LICENSE) and the conduct policy that governs the product itself.

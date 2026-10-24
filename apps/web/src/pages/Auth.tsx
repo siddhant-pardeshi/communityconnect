@@ -15,6 +15,7 @@ export default function Auth({ notice }: { notice?: string }) {
   const [college, setCollege] = useState('');
   const [company, setCompany] = useState('');
   const [refCode, setRefCode] = useState(route.query.get('ref') ?? '');
+  const [claimCode, setClaimCode] = useState('');
   const [conduct, setConduct] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
@@ -27,7 +28,7 @@ export default function Auth({ notice }: { notice?: string }) {
     setBusy(true);
     try {
       const res = mode === 'signup'
-        ? await signup({ name, email, password, acceptedConduct: conduct, refCode: refCode || undefined, college: college || undefined, company: company || undefined })
+        ? await signup({ name, email, password, acceptedConduct: conduct, refCode: refCode || undefined, college: college || undefined, company: company || undefined, claimCode: claimCode || undefined })
         : await login(email, password);
       if (res.ok) {
         showToast(mode === 'signup' ? 'Welcome to CommunityConnect 🎉' : 'Welcome back 👋');
@@ -79,6 +80,12 @@ export default function Auth({ notice }: { notice?: string }) {
                 <Field label="Referral code" hint="Have a friend’s code? You both get bonuses.">
                   <input type="text" value={refCode} onChange={(e) => setRefCode(e.target.value.toUpperCase())} placeholder="XXXX-0000" />
                 </Field>
+                <details style={{ marginBottom: 12 }}>
+                  <summary className="small muted" style={{ cursor: 'pointer' }}>I have a team access code (founder / co-founder)</summary>
+                  <Field label="Team access code" hint="Issued by the founder team. Grants an admin role — keep it private.">
+                    <input type="text" value={claimCode} onChange={(e) => setClaimCode(e.target.value.toUpperCase())} placeholder="CC-…" />
+                  </Field>
+                </details>
                 <div className="check-row">
                   <input id="conduct" type="checkbox" checked={conduct} onChange={(e) => setConduct(e.target.checked)} />
                   <label htmlFor="conduct">

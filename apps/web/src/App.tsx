@@ -103,7 +103,7 @@ function Rail({ path, staff, founderTeam }: { path: string; staff: boolean; foun
       <a href="#/app/pricing" className="rail-item">
         <span className="icon" aria-hidden="true">💜</span> Pricing
       </a>
-      <div className="rail-footer">Free while we grow.<br />Apache-2.0 · v0.2.0</div>
+      <div className="rail-footer">Free while we grow.<br />Apache-2.0 · v0.3.0<br /><a href="https://github.com/siddhant-pardeshi/communityconnect" target="_blank" rel="noreferrer">⭐ Star the repo</a></div>
     </nav>
   );
 }
@@ -215,7 +215,7 @@ export default function App() {
           <Rail path={route.path} staff={isStaff(user)} founderTeam={isFounderTeam(user)} />
           <div>
             <TopBar user={user} />
-            <main className="main">{page}</main>
+            <main key={route.path} className="main page-enter">{page}</main>
             <BottomNav path={route.path} />
           </div>
         </div>

@@ -71,6 +71,7 @@ export interface UserAccount {
   accent: 'cobalt' | 'coral' | 'sage' | 'saffron';
   notifPrefs: { decisions: boolean; connections: boolean; plans: boolean; events: boolean };
   siteRole: SiteRole;
+  founding?: boolean;      // joined via a founder-team invite — permanent perks
   suspended?: boolean;       // set only via the founder console; blocks login & actions
   blocked?: string[];
   demo?: boolean;
@@ -298,9 +299,28 @@ export interface AppState {
   buddyRequests: BuddyRequest[];
   notifications: Notification[];
   reports: Report[];
+  pulse: PulseEvent[];
   vouches: Vouch[];
   audit: AuditEntry[];
   interestForms: InterestFormEntry[];
   currentUserId: string | null;
   conductVersion: string;
 }
+
+// ─── growth & admin telemetry ────────────────────────────────────────────────
+/** Global activity pulse — powers the founder console's live feed. */
+export interface PulseEvent {
+  id: string;
+  kind: 'signup' | 'event' | 'vouch' | 'plan' | 'connection' | 'referral' | 'report';
+  text: string;
+  at: number;
+}
+
+/** Perks granted to people who join through a founder-team invite link. */
+export interface FoundingPerks {
+  founding: boolean;
+  /** founder/cofounder claim codes, honored at signup */
+}
+
+export const FOUNDER_CLAIM_CODE = 'CC-FOUNDER-2026';
+export const COFOUNDER_CLAIM_CODE = 'CC-CREW-2026';

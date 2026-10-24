@@ -33,7 +33,7 @@ export default function Dashboard() {
         </div>
         <div style={{ textAlign: 'right' }}>
           <Btn variant={checkedInToday ? 'outline' : 'primary'} onClick={() => { const r = checkin(); setCheckinMsg(r.message); showToast(r.message); }}>
-            {checkedInToday ? `🔥 ${user.streak.count}-day streak` : 'Daily check-in'}
+            {checkedInToday ? <span className="flame">🔥 {user.streak.count}-day streak</span> : 'Daily check-in'}
           </Btn>
           {checkinMsg && <p className="small muted" style={{ marginTop: 6, maxWidth: 260 }}>{checkinMsg}</p>}
         </div>
