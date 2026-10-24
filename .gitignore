@@ -9,3 +9,7 @@ Thumbs.db
 desktop.ini
 
 # Build output (app/.gitignore covers the rest)
+
+# Workflow files need the "workflow" token scope to push; kept locally.
+# Fix: gh auth refresh -h github.com -s workflow  → then: git add .github && git commit -m "CI" && git push
+.github/
