@@ -1,0 +1,19 @@
+{
+  "name": "communityconnect",
+  "private": true,
+  "version": "0.2.0",
+  "description": "CommunityConnect monorepo — Find your event. Bring your people.",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "npm run dev --workspace @cc/web",
+    "build": "npm run typecheck --workspaces --if-present && npm run build --workspace @cc/web",
+    "test": "npm run test --workspaces --if-present",
+    "typecheck": "npm run typecheck --workspaces --if-present"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.3"
+  }
+}

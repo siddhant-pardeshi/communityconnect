@@ -8,7 +8,7 @@ CommunityConnect turns scattered event links into confirmed group plans and usef
 
 ---
 
-## What works today (v0.1.0)
+## What works today (v0.2.0)
 
 | Area | Status |
 |---|---|
@@ -27,6 +27,8 @@ CommunityConnect turns scattered event links into confirmed group plans and usef
 | **Networking card**: printable 85.6×54 mm card with QR + vCard QR, privacy-aware | ✅ Live |
 | Momentum: gentle streaks with weekly grace, contribution XP with daily caps, cosmetic unlocks | ✅ Live |
 | Reporting + moderation console with recorded outcomes | ✅ Live |
+| **Peer trust & vouches**: hearts, peer-verification of college/company/course claims, conduct signals — rolling 14-day window so records refresh and conduct can improve | ✅ Live |
+| **Founder console**: founder + up to 2 co-founders with full control — edit any account, grant team roles (moderator/co-founder), suspend, append-only audit log | ✅ Live |
 | PWA install (all devices) + offline shell | ✅ Live |
 | In-app notifications + preferences | ✅ Live |
 | Data export & account deletion | ✅ Live |
@@ -36,14 +38,13 @@ CommunityConnect turns scattered event links into confirmed group plans and usef
 ## Quick start (local)
 
 ```bash
-cd app
-npm install
-npm run dev        # http://localhost:5173
+npm install         # installs both workspaces
+npm run dev         # http://localhost:5173
+npm test            # vitest across workspaces
+npm run build       # typecheck (all) + production build
 ```
 
-Other scripts: `npm run build` (typecheck + production build), `npm run test` (vitest), `npm run preview` (serve the build).
-
-Demo data (10 events, 6 fictional profiles, 2 circles, 3 decisions, seeded plans/buddy requests) loads automatically and is labeled **DEMO DATA** — or use the one-click “Explore as …” demo profiles on the landing page.
+Demo data (11 events, 9 fictional profiles incl. the founder team, 2 circles, 3 decisions, vouches, seeded plans/buddy requests) loads automatically and is labeled **DEMO DATA** — or use the one-click “Explore as …” demo profiles (Founder, Aarav, Meera, Ananya) on the landing page.
 
 ## Deployment
 
@@ -51,15 +52,16 @@ Demo data (10 events, 6 fictional profiles, 2 circles, 3 decisions, seeded plans
 - **Any static host works:** `npm run build` produces a self-contained `dist/` (relative base, hash routing).
 - **Self-hosting / server backend:** the documented upgrade path is Supabase (auth, Postgres + RLS, storage). The store layer (`app/src/lib/store.ts`) is the single swap point.
 
-## Repository map
+## Repository map (enterprise monorepo)
 
 ```
-app/src/lib/       domain logic — types, store, rules (XP/scoring/streaks), time/overlap/ics, seed
-app/src/pages/     24 screens — landing → decision room → moderation
-app/src/styles/    Warm Constellations design system (tokens, motion, print CSS)
-app/tests/         vitest suites for overlap math, scoring, XP/streak/referral rules
-docs/              decisions, acceptance matrix, launch playbook, business model
+packages/core/     @cc/core — pure domain: types, rules (XP/scoring/trust/roles), time/overlap/ics, seed + tests
+apps/web/          @cc/web  — React SPA: store (state+actions), 25 screens, design system, PWA
+docs/              ARCHITECTURE, DECISIONS + adr/, ACCEPTANCE_MATRIX, LAUNCH_PLAYBOOK, BUSINESS_MODEL, BRAND
+.github/           CI + Pages deploy workflows (see PROJECT_STATUS for the token-scope note)
 ```
+
+Dependency direction is one-way: `@cc/core` is pure (no React/DOM/storage) so the future backend reuses it unchanged. See [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md).
 
 ## Contributing, safety & license
 

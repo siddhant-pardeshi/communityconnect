@@ -26,3 +26,13 @@ Evidence types: **T** = unit test (vitest), **B** = browser-verified on the prod
 | 20 | Lint/typecheck/tests/build recorded with real results | PROJECT_STATUS.md verification log | ✅ |
 
 **Gaps to close with the server backend (v0.2):** true multi-device isolation (RLS), server-enforced deadlines (client currently trusts its own wall clock within a session), durable outbox, and field performance data.
+
+## v0.2 additions
+
+| # | Scenario | Evidence | Status |
+|---|---|---|---|
+| 21 | Vouch requires shared started event; self/blocked/duplicate vouches rejected | I — `vouchUser` gates; T — `hasActiveVouch`/window math | ✅ |
+| 22 | Trust counts only in-window vouches; expired fade (conduct recovery) | T — `computeTrust` window suite | ✅ |
+| 23 | Founder immutable; ≤2 cofounders; only founder appoints cofounders | T — `canSetRole`/`cofounderSlotsTaken` | ✅ |
+| 24 | Admin edits audited; suspension blocks login + logs out the account | I — audit entries + login guard + App shell | ✅ |
+| 25 | Conduct concerns never public — routed to moderation | I — vouch UI copy + note privacy | ✅ |

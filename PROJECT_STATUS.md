@@ -58,3 +58,25 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 2. Server-side auth (email OTP or OAuth) and RLS for every table.
 3. Notification outbox + transactional email.
 4. Pilot in one city per docs/LAUNCH_PLAYBOOK.md week 1.
+
+---
+
+# v0.2.0 — Peer trust, founder console, enterprise restructure (25 Oct 2026)
+
+## Added
+- **Peer vouches (ADR-0002):** participants of the same started event can give ❤️, peer-verify claims (college/company/course), and record polite/professional conduct. Rolling 14-day window (`TRUST_WINDOW_DAYS`), one vouch per pair per window, no XP for vouches, conduct concerns route to moderation only. New tests pin the window math.
+- **Founder console (ADR-0003):** `founder` + max 2 `cofounder` roles; edit any account's details, grant moderator/co-founder, suspend/unsuspend; append-only audit log. Founder role immutable; founder-team accounts cannot be suspended from the console. Suspended accounts blocked at login.
+- **Monorepo (ADR-0001):** `packages/core` (@cc/core, pure domain + tests) and `apps/web` (@cc/web, React SPA). One-way dependency direction. Root scripts: `npm test`, `npm run build`.
+- docs/BRAND.md — name candidates (Orbitly, CrewUp, Huddl, Saathi, Junto) + taglines; docs/ARCHITECTURE.md; docs/adr/0001–0003.
+- Data migration v1→v2 (backfills vouches/audit on load).
+
+## Verification (real)
+- `npm run typecheck` — clean in both workspaces
+- `npm test` — **27/27 passed** (core: overlap/weeks 7, rules/trust/roles/streaks/scoring 20)
+- `npm run build` — ✓ 145 modules, ~114 KB gzip
+- Browser smoke: founder demo login → Founder console (role + audit visible); vouch modal from shared event; profile trust chips render.
+
+## Known limitations (unchanged + new)
+- Data remains per-browser (documented v0.3 Supabase swap).
+- Trust window is client-enforced; server enforcement arrives with the backend.
+- An empty `app/` folder may linger on the maintainer's machine (held by an OS handle); it is not part of the repo.
