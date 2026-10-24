@@ -322,5 +322,13 @@ export interface FoundingPerks {
   /** founder/cofounder claim codes, honored at signup */
 }
 
-export const FOUNDER_CLAIM_CODE = 'CC-FOUNDER-2026';
-export const COFOUNDER_CLAIM_CODE = 'CC-CREW-2026';
+/**
+ * Team access codes are stored as SHA-256 hashes so the plaintext never lives
+ * in the public repository. The founder holds the plaintext privately and
+ * rotates it per docs in the founder-private distribution. Verify with
+ * verifyClaimCode() in rules.ts.
+ */
+export const CLAIM_CODE_HASHES = {
+  founder: 'e8c5cc2d059f06e0985ad30264c4076162151fb8260fec2f1db17dd0edf0a04b',
+  cofounder: 'da20768fc525d81cc00c1bf7df5347d3f0c7d853b6b60c12852264246f79f2a6',
+} as const;

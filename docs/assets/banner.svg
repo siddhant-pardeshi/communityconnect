@@ -7,6 +7,7 @@
     </linearGradient>
     <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
       <stop offset="0" stop-color="#B7C8FF"/>
+      <stop offset="0.5" stop-color="#E9EEFF"/>
       <stop offset="1" stop-color="#E98D73"/>
     </linearGradient>
     <radialGradient id="glow1" cx="0.18" cy="0.3" r="0.5">
@@ -17,32 +18,39 @@
       <stop offset="0" stop-color="#E98D73" stop-opacity="0.22"/>
       <stop offset="1" stop-color="#E98D73" stop-opacity="0"/>
     </radialGradient>
+    <style>
+      .node { animation: pulse 3.2s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+      .node2 { animation-delay: 0.5s; } .node3 { animation-delay: 1.1s; } .node4 { animation-delay: 1.7s; }
+      .arc { stroke-dasharray: 240; stroke-dashoffset: 240; animation: draw 3.6s ease-in-out infinite alternate; }
+      .arc2 { animation-delay: 0.9s; }
+      .tagline { animation: shimmer 5s ease-in-out infinite; }
+      .spark { animation: twinkle 2.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+      .spark2 { animation-delay: 0.8s; } .spark3 { animation-delay: 1.6s; }
+      @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.12); } }
+      @keyframes draw { from { stroke-dashoffset: 240; } to { stroke-dashoffset: 0; } }
+      @keyframes shimmer { 0%, 100% { opacity: 0.85; } 50% { opacity: 1; } }
+      @keyframes twinkle { 0%, 100% { opacity: 0.25; transform: scale(0.8); } 50% { opacity: 1; transform: scale(1.25); } }
+    </style>
   </defs>
   <rect width="1200" height="300" fill="url(#bg)"/>
   <rect width="1200" height="300" fill="url(#glow1)"/>
   <rect width="1200" height="300" fill="url(#glow2)"/>
 
-  <!-- connecting arcs -->
-  <g fill="none" stroke="#E9EEFF" stroke-opacity="0.35" stroke-width="2">
-    <path d="M120 70 C 210 110, 300 150, 380 170"/>
-    <path d="M1000 230 C 920 190, 840 160, 760 150"/>
-  </g>
+  <path class="arc" d="M120 70 C 210 110, 300 150, 380 170" fill="none" stroke="#E9EEFF" stroke-opacity="0.35" stroke-width="2"/>
+  <path class="arc arc2" d="M1000 230 C 920 190, 840 160, 760 150" fill="none" stroke="#E9EEFF" stroke-opacity="0.35" stroke-width="2"/>
 
-  <!-- gather mark -->
   <g transform="translate(78,84)">
-    <circle cx="0" cy="0" r="16" fill="#E98D73"/>
-    <circle cx="52" cy="0" r="16" fill="#E6BC56"/>
-    <circle cx="26" cy="46" r="16" fill="#A9C4B2"/>
-    <circle cx="26" cy="20" r="11" fill="#F5F3ED"/>
+    <circle class="node" cx="0" cy="0" r="16" fill="#E98D73"/>
+    <circle class="node node2" cx="52" cy="0" r="16" fill="#E6BC56"/>
+    <circle class="node node3" cx="26" cy="46" r="16" fill="#A9C4B2"/>
+    <circle class="node node4" cx="26" cy="20" r="11" fill="#F5F3ED"/>
     <path d="M8 6 C 18 14, 34 14, 44 6" stroke="#E9EEFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
     <path d="M8 40 C 18 32, 34 32, 44 40" stroke="#E9EEFF" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.85"/>
   </g>
 
-  <!-- wordmark -->
   <text x="190" y="140" font-family="Georgia, 'Times New Roman', serif" font-size="58" font-weight="700" fill="#F2F4EE" letter-spacing="-1">Community<tspan fill="#B7C8FF">Connect</tspan></text>
-  <text x="193" y="186" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-style="italic" fill="url(#accent)">Find your event. Bring your people.</text>
+  <text class="tagline" x="193" y="186" font-family="Georgia, 'Times New Roman', serif" font-size="27" font-style="italic" fill="url(#accent)">Find your event. Bring your people.</text>
 
-  <!-- feature chips -->
   <g font-family="Verdana, 'Segoe UI', sans-serif" font-size="15" font-weight="bold">
     <g><rect x="193" y="212" rx="15" width="150" height="30" fill="#223229" stroke="#3C5143"/><text x="208" y="232" fill="#B5C2B7">🗳 Decision Rooms</text></g>
     <g><rect x="355" y="212" rx="15" width="140" height="30" fill="#223229" stroke="#3C5143"/><text x="370" y="232" fill="#B5C2B7">🎁 Referral XP</text></g>
@@ -51,13 +59,15 @@
     <g><rect x="799" y="212" rx="15" width="170" height="30" fill="#223229" stroke="#3C5143"/><text x="814" y="232" fill="#B5C2B7">🌱 Support hub</text></g>
   </g>
 
-  <!-- right-side node constellation -->
   <g>
-    <circle cx="1035" cy="90" r="14" fill="#E98D73"/>
-    <circle cx="1105" cy="70" r="11" fill="#E6BC56"/>
-    <circle cx="1140" cy="140" r="12" fill="#A9C4B2"/>
-    <circle cx="1055" cy="170" r="9" fill="#B7C8FF"/>
+    <circle class="node" cx="1035" cy="90" r="14" fill="#E98D73"/>
+    <circle class="node node2" cx="1105" cy="70" r="11" fill="#E6BC56"/>
+    <circle class="node node3" cx="1140" cy="140" r="12" fill="#A9C4B2"/>
+    <circle class="node node4" cx="1055" cy="170" r="9" fill="#B7C8FF"/>
     <path d="M1044 98 L1096 76 M1114 80 L1133 130 M1128 148 L1064 166" stroke="#E9EEFF" stroke-opacity="0.5" stroke-width="2" fill="none"/>
+    <path class="spark" d="M1070 40 l3 7 7 3 -7 3 -3 7 -3 -7 -7 -3 7 -3 z" fill="#F2F4EE"/>
+    <path class="spark spark2" d="M1155 90 l2.4 5.6 5.6 2.4 -5.6 2.4 -2.4 5.6 -2.4 -5.6 -5.6 -2.4 5.6 -2.4 z" fill="#E98D73"/>
+    <path class="spark spark3" d="M1020 130 l2 4.8 4.8 2 -4.8 2 -2 4.8 -2 -4.8 -4.8 -2 4.8 -2 z" fill="#E6BC56"/>
   </g>
   <text x="1030" y="232" font-family="Verdana, sans-serif" font-size="14" fill="#B5C2B7">free while we grow · Apache-2.0</text>
 </svg>

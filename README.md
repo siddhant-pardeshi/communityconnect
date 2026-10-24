@@ -8,6 +8,7 @@
   <a href="https://siddhant-pardeshi.github.io/communityconnect/">Live app</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="PROJECT_STATUS.md">Status</a> ·
+  <a href="marketing/CommunityConnect-User-Walkthrough.pdf">Walkthrough</a> ·
   <a href="docs/LAUNCH_PLAYBOOK.md">Launch playbook</a> ·
   <a href="CODE_OF_CONDUCT.md">Conduct</a>
 </p>

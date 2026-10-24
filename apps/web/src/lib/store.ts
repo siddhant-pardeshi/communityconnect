@@ -5,7 +5,7 @@ import type {
 import {
   buildSeed, awardXp, canAwardConnection, applyCheckin, scoreDecision, XP_RULES,
   uid, pairKeyOf, makeReferralCode, overlaps, isStaff, isFounderTeam, canSetRole, levelOf,
-  FOUNDER_CLAIM_CODE, COFOUNDER_CLAIM_CODE, isFoundingReferrer, FOUNDING_PERKS,
+  isFoundingReferrer, FOUNDING_PERKS, verifyClaimCode,
   cofounderSlotsTaken, MAX_COFOUNDERS, VOUCH_CLAIMS, hasActiveVouch, TRUST_WINDOW_DAYS, computeTrust,
 } from '@cc/core';
 
@@ -108,22 +108,18 @@ export async function signup(input: SignupInput): Promise<{ ok: boolean; error?:
     const code = input.refCode.trim().toUpperCase();
     referrer = Object.values(state.users).find((u) => u.referralCode.toUpperCase() === code);
   }
-  // Team claim codes: founder (if the seat is open) or co-founder (max 2). These are
-  // launch-phase convenience codes — server-side invitations replace them in v0.3.
+  // Team claim codes: hashed in the public repo, plaintext held privately by the
+  // founder. Server-side invitations replace this mechanism at the backend swap.
   let claim: 'founder' | 'cofounder' | null = null;
-  const code = (input.claimCode ?? '').trim().toUpperCase();
-  if (code === FOUNDER_CLAIM_CODE.toUpperCase()) {
-    if (Object.values(state.users).some((u) => u.siteRole === 'founder')) {
+  if (input.claimCode?.trim()) {
+    claim = await verifyClaimCode(input.claimCode);
+    if (!claim) return { ok: false, error: 'That team access code is not valid.' };
+    if (claim === 'founder' && Object.values(state.users).some((u) => u.siteRole === 'founder')) {
       return { ok: false, error: 'The founder seat is already claimed in this workspace.' };
     }
-    claim = 'founder';
-  } else if (code === COFOUNDER_CLAIM_CODE.toUpperCase()) {
-    if (cofounderSlotsTaken(Object.values(state.users)) >= MAX_COFOUNDERS) {
-      return { ok: false, error: `Both co-founder seats are taken.` };
+    if (claim === 'cofounder' && cofounderSlotsTaken(Object.values(state.users)) >= MAX_COFOUNDERS) {
+      return { ok: false, error: 'Both co-founder seats are taken.' };
     }
-    claim = 'cofounder';
-  } else if (code) {
-    return { ok: false, error: 'That team access code is not valid.' };
   }
   const founding = isFoundingReferrer(referrer) || claim !== null;
   const user: UserAccount = {
