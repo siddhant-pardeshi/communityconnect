@@ -89,3 +89,11 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - Release v0.3.0 ships the marketing pack: founder's manual PDF (6 pages), A4 flyer PDF, social banners (OG/square/story PNG with QR), QR codes, repo banner SVG.
 - Repository surface updated: branded description, homepage link, topics, README with banner + shields.
 - Founder console live view verified on the built artifact: telemetry grid, invite leaderboard, pulse feed, team invite links.
+
+# v0.4.0 — floating hero scene, walkthroughs, access-code hardening (25 Oct 2026)
+- FloatingScene on the landing hero: parallax emblems, event-collision vignette, chat bubble; verified live (bundle index-BarDSP1X.js).
+- SECURITY: team access codes rotated; repository stores SHA-256 hashes only (verifyClaimCode); founder guide + builder moved to the founder-private folder (outside the repo); v0.3.0 release notes scrubbed and its founder-guide asset deleted. Old leaked codes are inert.
+- CommunityConnect-User-Walkthrough.pdf (13 pages, 11 real screenshots) published in marketing/ and attached to release v0.4.0; linked from the landing footer and README.
+- Founder walkthrough (8 pages) exists only in the private distribution.
+- A Founders/ folder of team photos appeared in the workspace mid-build; deliberately NOT committed pending the founder's decision — see .gitignore.
+- Verification: typecheck clean ×2 · 27/27 tests · build OK · live browser checks (floating scene, collision vignette, marquee, walkthrough link).
