@@ -16,3 +16,11 @@ desktop.ini
 
 # Dependencies (workspaces hoist to root)
 node_modules/
+
+# Founder-private materials live OUTSIDE the repo (see founder-private folder)
+CommunityConnect-Founder-Guide.pdf
+CommunityConnect-Founder-Walkthrough.pdf
+build_walkthroughs.py
+
+# Team photos pending founder decision on publication
+Founders/

@@ -264,10 +264,15 @@ Roles (SiteRole): 'founder' (exactly one, immutable, cannot be suspended via
   cofounder cap. Every admin action appends to state.audit. Suspended users:
   login rejected, shell shows suspension screen, currentUserId cleared on suspend.
 
-Team claim codes (client-side launch conveniences, in types.ts):
-  FOUNDER_CLAIM_CODE   = 'CC-FOUNDER-2026'  → claims founder seat if vacant
-  COFOUNDER_CLAIM_CODE = 'CC-CREW-2026'     → claims a cofounder seat if ≤2 taken
-  Server-side invitations replace these at the backend milestone.
+Team claim codes (SECURITY MODEL — read carefully):
+  Codes are NOT stored in this repository. packages/core/src/types.ts holds
+  CLAIM_CODE_HASHES (SHA-256 of the plaintext codes); rules.ts provides
+  async verifyClaimCode(input) which hashes the input and compares. The
+  plaintext codes live ONLY in the founder's private distribution folder
+  (outside this repo — see FOUNDER_PRIVATE.md there) and can be rotated by
+  computing a new SHA-256 and updating CLAIM_CODE_HASHES. Old codes found in
+  git history are inert because comparison is hash-based. Server-side
+  invitations replace this mechanism at the backend milestone.
 
 Blocking: user.blocked[] — gates connection requests, buddy requests to that
   person, and DMs (isBlocked checks BOTH directions). Blocking also declines
@@ -508,15 +513,16 @@ Add tests for every new pure rule. Tests import from '../src'.
 ================================================================================
 13. MARKETING ASSETS (marketing/)
 ================================================================================
-build_guides.py (ReportLab, Georgia/Verdana from C:\Windows\Fonts, brand palette)
-  → CommunityConnect-Founder-Guide.pdf (6 pages: overview, feature reference ×2,
-    founder runbook incl. team access codes + event playbook, metrics & limits)
-  → CommunityConnect-Flyer.pdf (A4: dark header, 3 steps, referral panel,
-    founder invite QR, footer with repo link). Rerun: `python build_guides.py`.
+build_flyer.py (public, ReportLab, Georgia/Verdana from C:\Windows\Fonts, brand
+  palette) → CommunityConnect-Flyer.pdf (A4: dark header, 3 steps, referral
+  panel, founder invite QR, footer with repo link). Rerun: `python build_flyer.py`.
 assets/: qr-main.png, qr-founder-invite.png, qr-join-free.png (node qrcode,
   900px), banner-og.png 1200×630, banner-square.png 1080×1080, banner-story.png
   1080×1920 (rendered from src/*.html via browser screenshots, QRs inlined),
   communityconnect-marketing-pack.zip. docs/assets/banner.svg = repo banner.
+FOUNDER-PRIVATE DISTRIBUTION (outside the repo, never pushed): the founder's
+  operating manual PDF, the founder walkthrough PDF, their ReportLab builder,
+  FOUNDER_PRIVATE.md with the plaintext access codes and rotation instructions.
 Social copy angles: "Never event alone." / founding-member perks / star ask.
 Event-playbook ground rules (never violate): organizer permission first, no
   attendee-list scraping, no mass DMs, demo the Decision Room in 60 seconds.

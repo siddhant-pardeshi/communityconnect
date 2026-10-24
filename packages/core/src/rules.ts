@@ -1,5 +1,5 @@
 import type { Decision, SiteRole, UserAccount, Vouch, VouchClaim, XpEntry } from './types';
-import { MAX_COFOUNDERS, VOUCH_CLAIMS } from './types';
+import { CLAIM_CODE_HASHES, MAX_COFOUNDERS, VOUCH_CLAIMS } from './types';
 import { rewardWeekKey, dayKeyInTz, daysBetweenKeys } from './util';
 
 // ─── XP & reward rules (policy v1) ───────────────────────────────────────────
@@ -318,4 +318,15 @@ export const FOUNDING_BADGE_LABEL = 'Founding Member';
 
 export function isFoundingReferrer(referrer: UserAccount | undefined): boolean {
   return !!referrer && isFounderTeam(referrer);
+}
+
+/** Compare a signup claim code against the stored hashes (plaintext never in repo). */
+export async function verifyClaimCode(input: string): Promise<'founder' | 'cofounder' | null> {
+  const norm = input.trim().toUpperCase();
+  if (!norm) return null;
+  const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(norm));
+  const hex = Array.from(new Uint8Array(buf)).map((b) => b.toString(16).padStart(2, '0')).join('');
+  if (hex === CLAIM_CODE_HASHES.founder) return 'founder';
+  if (hex === CLAIM_CODE_HASHES.cofounder) return 'cofounder';
+  return null;
 }

@@ -1,7 +1,7 @@
 import { navigate } from '../router';
 import { useStore, loginDemo, publicEvents, me } from '../lib/store';
 import { Wordmark } from '../components/Logo';
-import { Constellation } from '../components/Constellation';
+import { FloatingScene } from '../components/FloatingScene';
 import { Btn, Card, Chip } from '../components/ui';
 import { Reveal, CountUp, StarPrompt } from '../components/motion';
 
@@ -73,7 +73,7 @@ export default function Landing() {
             No credit card. Students, job seekers and people between roles are always welcome.
           </p>
         </div>
-        <div><Constellation /></div>
+        <div><FloatingScene /></div>
       </header>
 
       <Reveal as="section" aria-label="Taglines">
@@ -219,6 +219,7 @@ export default function Landing() {
           <a href="#/privacy">Privacy</a>
           <a href="#/terms">Terms</a>
           <a href="#/accessibility">Accessibility</a>
+          <a href="https://github.com/siddhant-pardeshi/communityconnect/blob/main/marketing/CommunityConnect-User-Walkthrough.pdf" target="_blank" rel="noreferrer">Walkthrough 📖</a>
           <a href="https://github.com/siddhant-pardeshi/communityconnect" target="_blank" rel="noreferrer">GitHub ⭐</a>
         </span>
       </footer>
