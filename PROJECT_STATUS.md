@@ -83,3 +83,9 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 
 ## Post-release fix (same day)
 - **PWA stale-cache bug caught in live verification:** the v0.1 service worker cached navigations cache-first, so returning visitors could get a blank page after a redeploy (old cached index → deleted bundle). Fix: `sw.js` rewritten to **network-first for navigations** with cache version bumped to `cc-shell-v2` (commit b286f07, redeployed to gh-pages). Returning visitors recover with one reload; new visitors unaffected.
+
+# v0.3.0 deployment (25 Oct 2026)
+- Live URL serving the v0.3.0 bundle (`index-CK4rkFo9.js`), verified HTTP 200 + rendered checks in a real browser: founder demo view, tagline marquee, star prompt, vouch feature card.
+- Release v0.3.0 ships the marketing pack: founder's manual PDF (6 pages), A4 flyer PDF, social banners (OG/square/story PNG with QR), QR codes, repo banner SVG.
+- Repository surface updated: branded description, homepage link, topics, README with banner + shields.
+- Founder console live view verified on the built artifact: telemetry grid, invite leaderboard, pulse feed, team invite links.
