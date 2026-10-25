@@ -1,0 +1,108 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="520" viewBox="0 0 1200 520" role="img" aria-label="Animated demo: three event candidates receive votes, a clash is flagged, and one plan is confirmed">
+  <defs>
+    <linearGradient id="dbg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#111B16"/><stop offset="1" stop-color="#1B2A46"/>
+    </linearGradient>
+    <radialGradient id="dglow" cx="0.2" cy="0.15" r="0.6">
+      <stop offset="0" stop-color="#2449D8" stop-opacity="0.28"/><stop offset="1" stop-color="#2449D8" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .cand { animation: idle 3.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+      .c2 { animation-delay: 0.6s; } .c3 { animation-delay: 1.2s; }
+      @keyframes idle { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+      .vote { transform-origin: center; transform-box: fill-box; transform: scale(0); animation: pop 9s ease-out infinite; }
+      @keyframes pop { 0% { transform: scale(0); opacity: 0; } 3% { transform: scale(1.25); opacity: 1; } 5% { transform: scale(1); opacity: 1; } 88% { transform: scale(1); opacity: 1; } 97% { transform: scale(0); opacity: 0; } 100% { transform: scale(0); opacity: 0; } }
+      .v1a { animation-delay: 0.9s; } .v1b { animation-delay: 1.4s; } .v1c { animation-delay: 2.0s; }
+      .v2a { animation-delay: 1.7s; } .v2b { animation-delay: 2.4s; }
+      .v3a { animation-delay: 2.9s; }
+      .clash { opacity: 0; animation: clash 9s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+      @keyframes clash { 0%, 26% { opacity: 0; transform: scale(0.5); } 31%, 42% { opacity: 1; transform: scale(1.15); } 37% { transform: scale(1); } 50%, 100% { opacity: 0; transform: scale(0.5); } }
+      .dim { animation: dim 9s ease-in-out infinite; }
+      @keyframes dim { 0%, 55% { opacity: 1; } 62%, 92% { opacity: 0.32; } 100% { opacity: 1; } }
+      .win { animation: win 9s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+      @keyframes win { 0%, 55% { transform: scale(1); } 62%, 92% { transform: scale(1.045); } 100% { transform: scale(1); } }
+      .plan { opacity: 0; animation: planIn 9s cubic-bezier(0.2, 1.6, 0.4, 1) infinite; transform-origin: center; transform-box: fill-box; }
+      @keyframes planIn { 0%, 66% { opacity: 0; transform: scale(0.7); } 72%, 92% { opacity: 1; transform: scale(1); } 98%, 100% { opacity: 0; transform: scale(0.7); } }
+      .ring { opacity: 0; animation: ring 9s ease-out infinite; transform-origin: center; transform-box: fill-box; }
+      @keyframes ring { 0%, 68% { opacity: 0; transform: scale(0.6); } 74% { opacity: 0.9; transform: scale(1.06); } 86%, 100% { opacity: 0; transform: scale(1.25); } }
+      .check { transform-origin: center; transform-box: fill-box; transform: scale(0); animation: checkPop 9s cubic-bezier(0.2, 1.8, 0.4, 1) infinite; }
+      @keyframes checkPop { 0%, 70% { transform: scale(0); } 76%, 92% { transform: scale(1); } 98%, 100% { transform: scale(0); } }
+      .cap { animation: capFade 9s ease-in-out infinite; }
+      @keyframes capFade { 0%, 8% { opacity: 0.55; } 16% { opacity: 1; } 62% { opacity: 1; } 72%, 92% { opacity: 1; } 100% { opacity: 0.55; } }
+      .t { font-family: Verdana, 'Segoe UI', sans-serif; font-weight: bold; }
+      .m { font-family: Verdana, 'Segoe UI', sans-serif; }
+    </style>
+  </defs>
+
+  <rect width="1200" height="520" rx="24" fill="url(#dbg)"/>
+  <rect width="1200" height="520" rx="24" fill="url(#dglow)"/>
+  <text class="t cap" x="60" y="66" font-size="26" fill="#F2F4EE">The Decision Room — watch a circle decide ⚡</text>
+  <text class="m" x="60" y="98" font-size="16" fill="#8FA093">can / maybe / cannot · quorum 60% · formula published · on loop</text>
+
+  <!-- candidate 1 (winner) -->
+  <g class="dim win">
+    <rect x="60" y="130" width="470" height="100" rx="16" fill="#1B2E24" stroke="#B7C8FF" stroke-width="2.5"/>
+    <text class="t" x="84" y="168" font-size="19" fill="#F2F4EE">🏃 Startup Saturday #42</text>
+    <text class="m" x="84" y="196" font-size="13" fill="#8FA093">Sat 5 PM · Indiranagar · free · source linked</text>
+    <g>
+      <circle cx="420" cy="152" r="9" fill="none" stroke="#3C5143" stroke-width="2"/>
+      <circle class="vote v1a" cx="420" cy="152" r="9" fill="#24623D"/>
+      <circle cx="446" cy="152" r="9" fill="none" stroke="#3C5143" stroke-width="2"/>
+      <circle class="vote v1b" cx="446" cy="152" r="9" fill="#24623D"/>
+      <circle cx="472" cy="152" r="9" fill="none" stroke="#3C5143" stroke-width="2"/>
+      <circle class="vote v1c" cx="472" cy="152" r="9" fill="#EAD18E"/>
+      <text class="t" x="420" y="196" font-size="13" fill="#B5C2B7">3 voted</text>
+    </g>
+  </g>
+
+  <!-- candidate 2 -->
+  <g class="dim">
+    <rect x="60" y="250" width="470" height="100" rx="16" fill="#1B2E24" stroke="#3C5143" stroke-width="1.5"/>
+    <text class="t" x="84" y="288" font-size="19" fill="#F2F4EE">🤖 AI Demo Night</text>
+    <text class="m" x="84" y="316" font-size="13" fill="#8FA093">Fri 6:30 PM · Koramangala · ₹199</text>
+    <g>
+      <circle cx="420" cy="272" r="9" fill="none" stroke="#3C5143" stroke-width="2"/>
+      <circle class="vote v2a" cx="420" cy="272" r="9" fill="#24623D"/>
+      <circle cx="446" cy="272" r="9" fill="none" stroke="#3C5143" stroke-width="2"/>
+      <circle class="vote v2b" cx="446" cy="272" r="9" fill="#EAD18E"/>
+      <text class="t" x="420" y="316" font-size="13" fill="#B5C2B7">2 voted</text>
+    </g>
+  </g>
+
+  <!-- candidate 3 -->
+  <g class="dim">
+    <rect x="60" y="370" width="470" height="100" rx="16" fill="#1B2E24" stroke="#3C5143" stroke-width="1.5"/>
+    <text class="t" x="84" y="408" font-size="19" fill="#F2F4EE">☎️ JS BLR Monthly</text>
+    <text class="m" x="84" y="436" font-size="13" fill="#8FA093">Mon 6 PM · MG Road · free</text>
+    <g>
+      <circle cx="420" cy="392" r="9" fill="none" stroke="#3C5143" stroke-width="2"/>
+      <circle class="vote v3a" cx="420" cy="392" r="9" fill="#24623D"/>
+      <text class="t" x="420" y="436" font-size="13" fill="#B5C2B7">1 voted</text>
+    </g>
+  </g>
+
+  <!-- clash flag between candidate times -->
+  <g class="clash">
+    <rect x="560" y="180" width="150" height="44" rx="22" fill="#FFF4D6"/>
+    <text class="t" x="583" y="209" font-size="17" fill="#795100">⚡ clash!</text>
+  </g>
+
+  <!-- the shared plan pops in -->
+  <g class="plan">
+    <rect x="620" y="150" width="520" height="220" rx="20" fill="#0F1A15" stroke="#B7C8FF" stroke-width="2.5"/>
+    <circle class="ring" cx="880" cy="260" r="70" fill="none" stroke="#B7C8FF" stroke-width="2"/>
+    <text class="m" x="652" y="196" font-size="15" fill="#8FA093">SHARED PLAN · confirmed</text>
+    <text class="t" x="652" y="240" font-size="26" fill="#F2F4EE">🏃 Startup Saturday #42</text>
+    <text class="m" x="652" y="272" font-size="15" fill="#B5C2B7">Sat 5 PM · Indiranagar Coffee House · free</text>
+    <text class="m" x="652" y="300" font-size="15" fill="#B5C2B7">✅ 3 confirmations · 📅 .ics · 📍 meetup note</text>
+    <g class="check">
+      <circle cx="1074" cy="326" r="26" fill="#E8F3E9"/>
+      <path d="M1062 326 l9 9 16 -18" stroke="#24623D" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+    </g>
+    <text class="m" x="652" y="348" font-size="12.5" fill="#8FA093">registration stays on the organizer's site — plans are not tickets</text>
+  </g>
+
+  <text class="m" x="620" y="430" font-size="14.5" fill="#8FA093">every result shows its counts and the published formula —</text>
+  <text class="m" x="620" y="454" font-size="14.5" fill="#8FA093">no mystery algorithm picks your weekend</text>
+  <text class="t" x="60" y="500" font-size="15" fill="#B5C2B7">⟲ this actually runs on loop in the live app — bring your circle and try it</text>
+</svg>

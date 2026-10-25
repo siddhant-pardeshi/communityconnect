@@ -32,6 +32,10 @@ event gets confirmed — with a buddy if someone wants company.
 It is free while the platform grows. Planning, voting, buddy matching, connections, safety tools
 and the networking card cost nothing, and they stay free by policy.
 
+<p align="center">
+  <img src="docs/assets/demo-loop.svg" alt="Animated demo: three event candidates receive votes, a clash is flagged, and one plan is confirmed" width="100%" />
+</p>
+
 ## The loop
 
 ```
@@ -99,3 +103,9 @@ command, documented in [PROJECT_STATUS.md](PROJECT_STATUS.md)). Any static host 
 ## License
 
 Apache-2.0. See [LICENSE](LICENSE) and the conduct policy that governs the product itself.
+
+<p align="center">
+  <a href="https://github.com/siddhant-pardeshi/communityconnect/stargazers">
+    <img src="docs/assets/star-cta.svg" alt="Star the repository — one second, no account needed" width="100%" />
+  </a>
+</p>

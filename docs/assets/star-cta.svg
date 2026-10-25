@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="230" viewBox="0 0 1200 230" role="img" aria-label="Star the repository — it takes one second and helps communities find CommunityConnect">
+  <defs>
+    <linearGradient id="sbg" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#17291F"/><stop offset="0.55" stop-color="#1B2A46"/><stop offset="1" stop-color="#17291F"/>
+    </linearGradient>
+    <radialGradient id="sglow" cx="0.14" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#E6BC56" stop-opacity="0.30"/><stop offset="1" stop-color="#E6BC56" stop-opacity="0"/>
+    </radialGradient>
+    <style>
+      .star { transform-origin: 110px 115px; animation: starPulse 2.6s ease-in-out infinite; }
+      @keyframes starPulse { 0%, 100% { transform: scale(1) rotate(-4deg); } 50% { transform: scale(1.14) rotate(5deg); } }
+      .s1, .s2, .s3, .s4 { transform-origin: center; transform-box: fill-box; animation: orbit 4.2s linear infinite; }
+      .s2 { animation-delay: -1.05s; } .s3 { animation-delay: -2.1s; } .s4 { animation-delay: -3.15s; }
+      @keyframes orbit { 0% { transform: rotate(0deg) translateX(86px) rotate(0deg); } 100% { transform: rotate(360deg) translateX(86px) rotate(-360deg); } }
+      .glowring { transform-origin: 110px 115px; animation: glowRing 2.6s ease-out infinite; transform-box: view-box; }
+      @keyframes glowRing { 0% { opacity: 0.75; transform: scale(1); } 100% { opacity: 0; transform: scale(1.45); } }
+      .cta { animation: ctaBreathe 2.6s ease-in-out infinite; transform-origin: center; transform-box: fill-box; }
+      @keyframes ctaBreathe { 0%, 100% { opacity: 0.9; } 50% { opacity: 1; } }
+      .arr { animation: nudge 1.6s ease-in-out infinite; }
+      @keyframes nudge { 0%, 100% { transform: translateX(0); } 50% { transform: translateX(9px); } }
+      .t { font-family: Georgia, 'Times New Roman', serif; }
+      .m { font-family: Verdana, 'Segoe UI', sans-serif; }
+    </style>
+  </defs>
+  <rect width="1200" height="230" rx="24" fill="url(#sbg)"/>
+  <rect width="1200" height="230" rx="24" fill="url(#sglow)"/>
+
+  <circle class="glowring" cx="110" cy="115" r="58" fill="none" stroke="#E6BC56" stroke-width="2"/>
+  <path class="star" d="M110 63 l13.7 27.8 30.7 4.5 -22.2 21.6 5.2 30.6 -27.4 -14.4 -27.4 14.4 5.2 -30.6 -22.2 -21.6 30.7 -4.5 z" fill="#E6BC56" stroke="#B58A05" stroke-width="2"/>
+  <g>
+    <path class="s1" d="M110 96 l2.6 5.3 5.9 .9 -4.2 4.1 1 5.8 -5.3 -2.8 -5.3 2.8 1 -5.8 -4.2 -4.1 5.9 -.9 z" fill="#F2F4EE"/>
+    <path class="s2" d="M110 96 l2.6 5.3 5.9 .9 -4.2 4.1 1 5.8 -5.3 -2.8 -5.3 2.8 1 -5.8 -4.2 -4.1 5.9 -.9 z" fill="#F1B39D"/>
+    <path class="s3" d="M110 96 l2.6 5.3 5.9 .9 -4.2 4.1 1 5.8 -5.3 -2.8 -5.3 2.8 1 -5.8 -4.2 -4.1 5.9 -.9 z" fill="#B7C8FF"/>
+    <path class="s4" d="M110 96 l2.6 5.3 5.9 .9 -4.2 4.1 1 5.8 -5.3 -2.8 -5.3 2.8 1 -5.8 -4.2 -4.1 5.9 -.9 z" fill="#B2D5BD"/>
+  </g>
+
+  <text class="t" x="210" y="100" font-size="34" font-weight="bold" fill="#F2F4EE">Enjoying it? Tap the ⭐ star.</text>
+  <text class="m" x="212" y="140" font-size="17" fill="#B5C2B7">One second. No account needed. Stars push CommunityConnect up GitHub’s</text>
+  <text class="m" x="212" y="166" font-size="17" fill="#B5C2B7">trending page — that’s how more communities find us and grow the crew.</text>
+
+  <g class="cta">
+    <rect x="952" y="88" rx="27" width="200" height="54" fill="#E6BC56"/>
+    <text class="t" x="1000" y="123" font-size="21" font-weight="bold" fill="#17291F">Star now</text>
+  </g>
+  <path class="arr" d="M905 108 h30 m0 0 l-10 -9 m10 9 l-10 9" stroke="#E6BC56" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
