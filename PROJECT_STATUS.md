@@ -104,3 +104,10 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - Repository scrub complete: no plaintext access codes anywhere public (hash-only); v0.3.0 release notes + assets clean.
 - Landing footer + README link the deck; versions 0.4.1 across the repo.
 - Verification: typecheck clean ×2 · 27/27 tests · build OK · programmatic deck QA (bounds/overflow) passed; visual render check not possible in this environment (LibreOffice unavailable) — decks open cleanly in python-pptx with all transitions present.
+
+# v0.4.2 — narrated video walkthroughs (25 Oct 2026)
+- CommunityConnect-User-Video-Walkthrough.mp4 (3 min 14 s, 1080p, ~8 MB): 11 scenes, narrated by Microsoft Zira TTS, scenes built as branded 1080p frames (video-build/scenes.js) with real app screenshots in device frames, assembled with ffmpeg. Committed to marketing/ and linked from the landing footer.
+- CommunityConnect-Founder-Video-Walkthrough.mp4 (same format, 10 scenes incl. current access codes): exists ONLY in the founder distribution — Confidential folder and the 'Arya Avani information' share bundle.
+- 'Arya Avani information' folder (Desktop, outside repo): share-ready bundle for the co-founders — founder video, briefing deck, guide, walkthrough, FOUNDER_PRIVATE.md, START HERE note.
+- video-build pipeline committed (scenes.js / tts.ps1 / assemble.sh); intermediate frames + audio git-ignored.
+- Verification: both MP4s render-checked via frame extraction; audio durations 194s each; typecheck/tests/build unchanged from v0.4.1 (no app-logic changes; footer link + versions only).

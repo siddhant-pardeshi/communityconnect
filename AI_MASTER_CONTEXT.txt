@@ -522,7 +522,11 @@ assets/: qr-main.png, qr-founder-invite.png, qr-join-free.png (node qrcode,
   screenshots/ (11 real app captures), CommunityConnect-User-Walkthrough.pdf
   (13-page public tour), CommunityConnect-Feature-Deck.pptx (14-slide animated
   public deck: slide transitions injected at OOXML level, emoji storytelling),
+  CommunityConnect-User-Video-Walkthrough.mp4 (3-minute narrated video, Zira
+  TTS voice, scenes built by video-build/scenes.js + tts.ps1 + assemble.sh),
   communityconnect-marketing-pack.zip. docs/assets/banner.svg = repo banner.
+FOUNDER VIDEO: CommunityConnect-Founder-Video-Walkthrough.mp4 exists ONLY in
+  the Confidential distribution and the Arya Avani information share bundle.
 CONFIDENTIAL DISTRIBUTION (outside the repo, never pushed):
   C:\Users\siddh\Desktop\CommunityConnect-Confidential holds FOUNDER_PRIVATE.md
   (plaintext access codes + rotation instructions), the founder operating manual
