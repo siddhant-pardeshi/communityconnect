@@ -119,3 +119,8 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - NEW: name privacy — `showNameOnAttendeeLists` (on by default). Off ⇒ the user appears as "Private guest" on Who's-in lists, and their profile's new "Going to" section hides (profile now lists upcoming events a person is attending, names permitting).
 - WhatsApp onboarding message for the co-founders written to the Arya Avani information bundle.
 - Verification: typecheck clean ×2 · 30/30 tests (attendeeDisplay + attendingEvents added) · build OK · browser smoke: empty landing (no demo), empty discover with first-poster CTA, claim-code signup path intact.
+
+# v0.5.1 — Watch & Learn CTAs (25 Oct 2026)
+- Landing: animated "Watch & Learn" section — pulsing play-button card (video tour) and wiggling deck card with "click here" glow pills, placed directly under the hero; hover lift; reduced-motion safe.
+- Dashboard: "New here? Watch the tour" card for first-run users.
+- README header links + repo description now lead with the video tour. Verified live (bundle index-Bx7aDjHd.js). Tests unchanged (30/30).
