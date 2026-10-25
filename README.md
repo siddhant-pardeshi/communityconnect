@@ -5,7 +5,9 @@
 <h1 align="center">CommunityConnect</h1>
 
 <p align="center">
-  <a href="https://siddhant-pardeshi.github.io/communityconnect/">Live app</a> ·
+  <a href="https://siddhant-pardeshi.github.io/communityconnect/">▶ Live app</a> ·
+  <a href="marketing/CommunityConnect-User-Video-Walkthrough.mp4">🎬 Watch the 3-min tour</a> ·
+  <a href="marketing/CommunityConnect-Feature-Deck.pptx">🎞️ Feature deck</a> ·
   <a href="docs/ARCHITECTURE.md">Architecture</a> ·
   <a href="PROJECT_STATUS.md">Status</a> ·
   <a href="marketing/CommunityConnect-User-Walkthrough.pdf">Walkthrough</a> ·

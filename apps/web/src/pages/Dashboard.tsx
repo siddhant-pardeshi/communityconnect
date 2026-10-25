@@ -122,6 +122,11 @@ export default function Dashboard() {
 
       <div className="grid-2">
         <Card>
+          <h3>🎬 New here? Watch the tour</h3>
+          <p className="muted small">A 3-minute narrated walkthrough of every feature — Decision Rooms, buddies, vouches and your QR card.</p>
+          <a className="btn btn-soft btn-sm" href="https://github.com/siddhant-pardeshi/communityconnect/blob/main/marketing/CommunityConnect-User-Video-Walkthrough.mp4" target="_blank" rel="noreferrer">▶ Watch the 3-min tour</a>
+        </Card>
+        <Card>
           <h3>🎁 Invite & both earn</h3>
           <p className="muted small">Share your code — when a friend joins you both get +75 XP and a 14-day profile boost.</p>
           <Link to="/app/referrals" className="btn btn-soft btn-sm">Get my invite link</Link>

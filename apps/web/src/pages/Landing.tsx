@@ -30,6 +30,8 @@ const MARQUEE: Array<[string, string]> = [
   ['Who’s coming? — see you there.', 'every weekend'],
 ];
 
+const GH = 'https://github.com/siddhant-pardeshi/communityconnect/blob/main/marketing';
+
 export default function Landing() {
   const s = useStore();
   const user = me(s);
@@ -71,6 +73,29 @@ export default function Landing() {
         </div>
         <div><FloatingScene /></div>
       </header>
+
+      <section className="landing-section" aria-label="Watch and learn" style={{ paddingTop: 26, paddingBottom: 10 }}>
+        <Reveal>
+          <div className="learn-grid">
+            <a className="learn-card" href={`${GH}/CommunityConnect-User-Video-Walkthrough.mp4`} target="_blank" rel="noreferrer">
+              <span className="playbtn" aria-hidden="true"><span className="tri" /></span>
+              <span>
+                <h3>🎬 Watch the 3-minute tour</h3>
+                <p>A soft-voice walkthrough of every feature — the fastest way to get it.</p>
+                <span className="chip chip-accent pulse-cta">▶ Click here to watch</span>
+              </span>
+            </a>
+            <a className="learn-card" href={`${GH}/CommunityConnect-Feature-Deck.pptx`} target="_blank" rel="noreferrer">
+              <span className="deckicon wiggle" aria-hidden="true">🎞️</span>
+              <span>
+                <h3>🎞️ Open the feature deck</h3>
+                <p>14 fun slides — the whole platform in one flip-through.</p>
+                <span className="chip chip-accent pulse-cta">👆 Click to open the PPT</span>
+              </span>
+            </a>
+          </div>
+        </Reveal>
+      </section>
 
       <Reveal as="section" aria-label="Taglines">
         <div className="marquee" role="marquee" aria-label="CommunityConnect taglines">
