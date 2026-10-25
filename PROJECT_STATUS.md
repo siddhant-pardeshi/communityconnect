@@ -124,3 +124,8 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - Landing: animated "Watch & Learn" section — pulsing play-button card (video tour) and wiggling deck card with "click here" glow pills, placed directly under the hero; hover lift; reduced-motion safe.
 - Dashboard: "New here? Watch the tour" card for first-run users.
 - README header links + repo description now lead with the video tour. Verified live (bundle index-Bx7aDjHd.js). Tests unchanged (30/30).
+
+# Repo-page animation pass (25 Oct 2026, after v0.5.1)
+- docs/assets/demo-loop.svg: self-running 9s loop — candidate cards float, vote dots pop in staggered sequence, a clash flag flashes, losers dim and the shared-plan card pops with a check burst + honesty caption. Verified rendering in-browser; GitHub serves README SVGs with CSS animations intact.
+- docs/assets/star-cta.svg: pulsing star with four orbiting sparkles, glow ring, breathing "Star now" pill + nudging arrow — hyperlinked to the stargazers page from the README.
+- README now carries three animated assets (banner, demo loop, star CTA) plus video/deck links in the header row.
