@@ -103,7 +103,7 @@ function Rail({ path, staff, founderTeam }: { path: string; staff: boolean; foun
       <a href="#/app/pricing" className="rail-item">
         <span className="icon" aria-hidden="true">💜</span> Pricing
       </a>
-      <div className="rail-footer">Free while we grow.<br />Apache-2.0 · v0.4.1<br /><a href="https://github.com/siddhant-pardeshi/communityconnect" target="_blank" rel="noreferrer">⭐ Star the repo</a></div>
+      <div className="rail-footer">Free while we grow.<br />Apache-2.0 · v0.4.2<br /><a href="https://github.com/siddhant-pardeshi/communityconnect" target="_blank" rel="noreferrer">⭐ Star the repo</a></div>
     </nav>
   );
 }
