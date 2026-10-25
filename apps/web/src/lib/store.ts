@@ -4,7 +4,7 @@ import type {
 } from '@cc/core';
 import {
   buildSeed, awardXp, canAwardConnection, applyCheckin, scoreDecision, XP_RULES,
-  uid, pairKeyOf, makeReferralCode, overlaps, isStaff, isFounderTeam, canSetRole, levelOf,
+  uid, pairKeyOf, makeReferralCode, overlaps, isStaff, isFounderTeam, canSetRole, levelOf, attendeeDisplay, attendingEvents,
   isFoundingReferrer, FOUNDING_PERKS, verifyClaimCode,
   cofounderSlotsTaken, MAX_COFOUNDERS, VOUCH_CLAIMS, hasActiveVouch, TRUST_WINDOW_DAYS, computeTrust,
 } from '@cc/core';
@@ -12,9 +12,18 @@ import {
 // ─── persistence ─────────────────────────────────────────────────────────────
 const KEY = 'cc_state_v3';
 
+function emptyState(): AppState {
+  return {
+    version: 3, users: {}, events: {}, rsvps: [], circles: {}, activity: [], decisions: {},
+    connections: [], threads: {}, buddyRequests: [], notifications: [], reports: [],
+    vouches: [], audit: [], pulse: [], interestForms: [], currentUserId: null,
+    conductVersion: 'v1.0 · 25 Oct 2026',
+  };
+}
+
 function load(): AppState {
   try {
-    // v1 → v2 migration: backfill the vouches/audit collections, then persist under the new key.
+    // v1 → v3 migration: backfill newer collections, persist under the current key.
     const raw = localStorage.getItem(KEY) ?? localStorage.getItem('cc_state_v2') ?? localStorage.getItem('cc_state_v1');
     if (raw) {
       const parsed = JSON.parse(raw) as AppState;
@@ -22,8 +31,18 @@ function load(): AppState {
         return { ...parsed, vouches: parsed.vouches ?? [], audit: parsed.audit ?? [], pulse: parsed.pulse ?? [], version: 3 };
       }
     }
-  } catch { /* corrupt state → reseed */ }
-  return buildSeed();
+  } catch { /* corrupt state → fresh start */ }
+  // PRODUCTION POLICY: the public build starts EMPTY — zero fictional users,
+  // events or activity. Demo data exists only as a dev-server convenience
+  // (npm run dev) or via __seedDemo() in the browser console (local demos).
+  (globalThis as Record<string, unknown>).__seedDemo = () => {
+    const seeded = buildSeed();
+    seeded.currentUserId = null;
+    state = seeded;
+    persist();
+    listeners.forEach((l) => l());
+  };
+  return import.meta.env.DEV ? buildSeed() : emptyState();
 }
 
 let state: AppState = load();
@@ -125,7 +144,7 @@ export async function signup(input: SignupInput): Promise<{ ok: boolean; error?:
   const user: UserAccount = {
     id, name, city: '', timezone: Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC',
     intents: [], links: [], avatarHue: Math.floor(Math.random() * 360),
-    privacy: { showCollege: true, showCompany: true, showBackground: true, directoryOptIn: true, showIntent: true },
+    privacy: { showCollege: true, showCompany: true, showBackground: true, directoryOptIn: true, showIntent: true, showNameOnAttendeeLists: true },
     email, passHash, salt, createdAt: Date.now(),
     referralCode: makeReferralCode(name),
     referredBy: referrer?.id,
@@ -270,7 +289,8 @@ export function postEvent(input: EventInput): { ok: boolean; error?: string; eve
   mutate((s) => {
     const ev: EventItem = {
       id, title: input.title.trim(), summary: input.summary.trim(), organizer: input.organizer.trim() || u.name,
-      sourceUrl: input.sourceUrl?.trim() || undefined, sourceProvider: input.sourceProvider?.trim() || undefined,
+      sourceUrl: input.sourceUrl?.trim() || undefined,
+      sourceProvider: input.sourceProvider?.trim() || detectProvider(input.sourceUrl || ''),
       mode: input.mode, city: input.mode === 'online' ? undefined : input.city?.trim() || undefined,
       venue: input.mode === 'online' ? undefined : input.venue?.trim() || undefined,
       startUtc: start, endUtc: end, tz: input.tz,
@@ -1006,6 +1026,18 @@ export function adminSetSuspended(targetId: string, suspended: boolean): { ok: b
     if (suspended && s.currentUserId === targetId) s.currentUserId = null;
   });
   return { ok: true };
+}
+
+/** Friendly platform label from a registration/listing URL. */
+function detectProvider(url: string): string | undefined {
+  const u = url.toLowerCase();
+  if (!u) return undefined;
+  if (u.includes('lu.ma') || u.includes('luma')) return 'Luma';
+  if (u.includes('meetup.com')) return 'Meetup';
+  if (u.includes('eventbrite')) return 'Eventbrite';
+  if (u.includes('allevents.in')) return 'AllEvents';
+  if (u.includes('konfetti') || u.includes('unstop') || u.includes('devfolio')) return 'Event platform';
+  return 'Web';
 }
 
 // ─── live pulse (founder console telemetry) ──────────────────────────────────

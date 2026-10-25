@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useStore, me, sendConnection, blockUser, submitReport, sendMessage, vouchTargets } from '../lib/store';
+import { attendingEvents } from '@cc/core';
 import { publicView, timeAgo } from '@cc/core';
 import { INTENT_LABELS } from '@cc/core';
 import { Avatar, Btn, Card, Chip, EmptyState, Field, Modal, showToast } from '../components/ui';
@@ -81,6 +82,28 @@ export default function PublicProfile({ userId }: { userId: string }) {
             }}>Report</Btn>
           </div>
         )}
+      </Card>
+
+      <Card style={{ marginTop: 16 }}>
+        <h3>Going to</h3>
+        {(() => {
+          if (u.privacy.showNameOnAttendeeLists === false) {
+            return <p className="small muted">🔒 {u.name.split(' ')[0]} keeps their attendance private.</p>;
+          }
+          const plans = Object.values(s.decisions).map((d) => d.plan).filter(Boolean)
+            .map((pl) => ({ eventId: pl!.eventId, confirmations: pl!.confirmations, status: pl!.status }));
+          const going = attendingEvents(s.events, s.rsvps, plans, u.id);
+          if (going.length === 0) return <p className="small muted">No upcoming events on their plan yet.</p>;
+          return going.map((e) => (
+            <div key={e.id} className="list-row">
+              <div style={{ flex: 1 }}>
+                <Link to={`/app/events/${e.id}`} style={{ fontWeight: 700, color: 'inherit' }}>{e.title}</Link>
+                <p className="small muted" style={{ margin: 0 }}>{e.mode === 'online' ? '💻 Online' : `📍 ${e.venue ?? e.city}`}</p>
+              </div>
+              <Chip tone="positive">{new Date(e.startUtc).getTime() < Date.now() ? 'happening' : 'going'}</Chip>
+            </div>
+          ));
+        })()}
       </Card>
 
       <Card style={{ marginTop: 16 }}>
