@@ -188,3 +188,26 @@ export function backgroundChips(u: UserAccount): { college?: string; company?: s
     course: u.privacy.showCollege ? u.course : undefined,
   };
 }
+
+/** Display identity on attendee lists — honors the name-privacy toggle. */
+export function attendeeDisplay(u: UserAccount): { name: string; initials: string; hue: number; isPrivate: boolean } {
+  if (u.privacy.showNameOnAttendeeLists === false) {
+    return { name: 'Private guest', initials: '🔒', hue: u.avatarHue, isPrivate: true };
+  }
+  const initials = u.name.split(/\s+/).map((w) => w[0]).slice(0, 2).join('').toUpperCase();
+  return { name: u.name, initials, hue: u.avatarHue, isPrivate: false };
+}
+
+/** Future public/circle events the user is attending (RSVP or confirmed plan). Caller applies privacy. */
+export function attendingEvents(
+  events: Record<string, EventItem>, rsvps: { userId: string; eventId: string }[],
+  plans: { eventId: string; confirmations: Record<string, string>; status: string }[], userId: string
+): EventItem[] {
+  const ids = new Set<string>();
+  for (const r of rsvps) if (r.userId === userId) ids.add(r.eventId);
+  for (const p of plans) if (p.confirmations?.[userId] === 'confirmed') ids.add(p.eventId);
+  const now = Date.now();
+  return Object.values(events)
+    .filter((e) => ids.has(e.id) && e.status === 'active' && new Date(e.endUtc).getTime() > now)
+    .sort((a, b) => +new Date(a.startUtc) - +new Date(b.startUtc));
+}

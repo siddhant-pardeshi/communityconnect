@@ -106,9 +106,19 @@ export default function Dashboard() {
       )}
 
       <SectionHead title="Worth a look this week" sub="From the community — always check the source before registering." action={<Link to="/app/discover" className="btn btn-outline btn-sm">Discover all</Link>} />
-      <div className="event-grid">
-        {upcoming.map((e) => <EventCard key={e.id} ev={e} />)}
-      </div>
+      {upcoming.length === 0 ? (
+        <Card>
+          <EmptyState
+            title="No events listed yet — be the first"
+            body="Post the next Luma, Meetup or campus event you're attending, with its registration link. Your circle can then vote on it and go together."
+            action={<Link to="/app/events/new" className="btn btn-primary">Post the first event</Link>}
+          />
+        </Card>
+      ) : (
+        <div className="event-grid">
+          {upcoming.map((e) => <EventCard key={e.id} ev={e} />)}
+        </div>
+      )}
 
       <div className="grid-2">
         <Card>

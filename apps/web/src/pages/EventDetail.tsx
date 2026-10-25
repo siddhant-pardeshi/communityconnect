@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useStore, me, attendeesOf, backgroundAgg, toggleRsvp, updateEvent, postEventComment, submitReport, postBuddyRequest, respondBuddy, cancelBuddy, conflictsForEvent } from '../lib/store';
-import { fmtEventTime, priceLabel, timeAgo, toLocalInput, backgroundChips, publicView, eventIcs } from '@cc/core';
+import { fmtEventTime, priceLabel, timeAgo, toLocalInput, backgroundChips, publicView, eventIcs, attendeeDisplay } from '@cc/core';
 import { download } from '../lib/dom';
 import { Avatar, Btn, Card, Chip, EmptyState, Field, Modal, SectionHead, showToast } from '../components/ui';
 import { Link, navigate } from '../router';
@@ -92,10 +92,10 @@ export default function EventDetail({ eventId }: { eventId: string }) {
               <p><strong>Accessibility</strong><br />{ev.accessibility ?? 'Not supplied by the poster — ask the organizer.'}</p>
             </div>
             <div>
-              <p><strong>Source</strong><br />
+              <p><strong>Registration / listing link</strong><br />
                 {ev.sourceUrl
-                  ? <a href={ev.sourceUrl} target="_blank" rel="noreferrer">{ev.sourceProvider ?? 'Original listing'} ↗</a>
-                  : <span className="muted">No source link — community-submitted. Verify before registering.</span>}
+                  ? <span className="row" style={{ display: 'inline-flex' }}><Chip tone="accent">{ev.sourceProvider ?? 'Web'}</Chip><a href={ev.sourceUrl} target="_blank" rel="noreferrer">{ev.sourceUrl.length > 44 ? ev.sourceUrl.slice(0, 44) + '…' : ev.sourceUrl} ↗</a></span>
+                  : <span className="muted">No link yet — community-submitted. Ask the poster to add the Luma/Meetup link.</span>}
               </p>
               <p className="small muted">Posted {timeAgo(ev.createdAt)} · listing freshness depends on its poster.</p>
               <div className="stack" style={{ gap: 8, marginTop: 8 }}>
@@ -136,12 +136,17 @@ export default function EventDetail({ eventId }: { eventId: string }) {
               {attendees.map(({ user: u, status }) => {
                 const bg = backgroundChips(u);
                 const pv = publicView(u);
+                const who = attendeeDisplay(u);
                 return (
                   <div key={u.id} className="list-row">
-                    <Avatar name={u.name} hue={u.avatarHue} />
+                    <Avatar name={who.isPrivate ? '??' : u.name} hue={who.hue} />
                     <div style={{ flex: 1 }}>
-                      <Link to={`/app/people/${u.id}`} style={{ fontWeight: 700, color: 'inherit' }}>{u.name}</Link>
-                      <span className="small muted"> · {u.role ?? 'Member'}{bg.college ? ` · 🎓 ${bg.college}` : ''}{bg.company ? ` · 🏢 ${bg.company}` : ''}</span>
+                      {who.isPrivate ? (
+                        <span style={{ fontWeight: 700 }}>🔒 Private guest</span>
+                      ) : (
+                        <Link to={`/app/people/${u.id}`} style={{ fontWeight: 700, color: 'inherit' }}>{who.name}</Link>
+                      )}
+                      {!who.isPrivate && <span className="small muted"> · {u.role ?? 'Member'}{bg.college ? ` · 🎓 ${bg.college}` : ''}{bg.company ? ` · 🏢 ${bg.company}` : ''}</span>}
                       <div className="agg" style={{ marginTop: 4 }}>
                         {pv.intents.filter((i) => i !== 'open_to_meet').slice(0, 3).map((i) => <Chip key={i}>{INTENT_LABELS[i]}</Chip>)}
                       </div>

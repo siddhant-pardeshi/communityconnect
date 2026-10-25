@@ -1,5 +1,5 @@
 import { navigate } from '../router';
-import { useStore, loginDemo, publicEvents, me } from '../lib/store';
+import { useStore, me } from '../lib/store';
 import { Wordmark } from '../components/Logo';
 import { FloatingScene } from '../components/FloatingScene';
 import { Btn, Card, Chip } from '../components/ui';
@@ -33,10 +33,6 @@ const MARQUEE: Array<[string, string]> = [
 export default function Landing() {
   const s = useStore();
   const user = me(s);
-  const demoUsers = ['u_founder', 'u_aarav', 'u_meera', 'u_ananya']
-    .map((id) => s.users[id])
-    .filter(Boolean);
-  const eventCount = publicEvents(s).length;
 
   return (
     <div>
@@ -92,7 +88,7 @@ export default function Landing() {
             {[
               { n: 75, suffix: ' XP', label: 'bonus for you AND your friend on every invite' },
               { n: 14, suffix: ' days', label: 'of profile boost when someone joins with your link' },
-              { n: eventCount, suffix: '+', label: 'upcoming community events listed in the demo' },
+              { n: 30, suffix: ' sec', label: 'to create your account and share your first event' },
               { n: 0, suffix: ' ₹', label: 'cost today, during the entire growth phase' },
             ].map((st, i) => (
               <Reveal key={st.label} delay={i * 90}>
@@ -135,29 +131,6 @@ export default function Landing() {
             </Reveal>
           ))}
         </div>
-      </section>
-
-      <section className="landing-section" aria-label="Try the demo">
-        <Reveal>
-          <div className="card" style={{ background: 'var(--surface-2)', border: 'none' }}>
-            <div className="row" style={{ justifyContent: 'space-between' }}>
-              <div>
-                <h2 style={{ fontSize: 24 }}>Try it right now — no signup</h2>
-                <p className="muted small" style={{ maxWidth: '56ch', marginBottom: 0 }}>
-                  Step into a fictional Bengaluru crew with live votes, a finalized plan and open buddy requests.
-                  <span className="demo-tag" style={{ marginLeft: 8 }}>DEMO DATA</span>
-                </p>
-              </div>
-              <div className="row">
-                {demoUsers.map((u) => (
-                  <Btn key={u.id} variant={u.id === 'u_founder' ? 'primary' : 'outline'} size="sm" onClick={() => { loginDemo(u.id); navigate('/app'); }}>
-                    {u.id === 'u_founder' ? '👑 Founder view' : `Explore as ${u.name.split(' ')[0]}`}
-                  </Btn>
-                ))}
-              </div>
-            </div>
-          </div>
-        </Reveal>
       </section>
 
       <section className="landing-section" aria-label="Who it is for">

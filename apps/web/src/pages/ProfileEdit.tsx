@@ -84,6 +84,7 @@ export default function ProfileEdit() {
           ['showBackground', 'Show my background text', 'The experience line on your profile.'],
           ['showIntent', 'Show my intent chips', 'Job-seeking, hiring, open-to-meet etc.'],
           ['directoryOptIn', 'Appear in the People directory', 'Off = only people you share a circle with can find you.'],
+          ['showNameOnAttendeeLists', 'Show my name on attendee lists', 'Off = you appear as “Private guest” on event Who’s-in lists and your Going-to section is hidden.'],
         ] as [keyof Privacy, string, string][]).map(([k, label, hint]) => (
           <div key={k} className="check-row">
             <input id={k} type="checkbox" checked={user.privacy[k]} onChange={() => togglePrivacy(k)} />

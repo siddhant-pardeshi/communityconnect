@@ -53,8 +53,12 @@ discover / post  →  shortlist in a circle  →  vote  →  finalize  →  conf
 
 ## Try it
 
-Open [the live app](https://siddhant-pardeshi.github.io/communityconnect/) and use a demo profile
-(Founder view / Aarav / Meera / Ananya) — no signup. The demo dataset is fictional and labeled.
+Open [the live app](https://siddhant-pardeshi.github.io/communityconnect/) and create a free account —
+no credit card, no fake content. The public build **starts empty by design**: the first events, circles
+and plans in your city come from real people. Be the first poster; the empty states will show you how.
+
+Contributors: `npm run dev` seeds a fictional demo dataset locally so features can be exercised
+without real content. It never loads in production.
 
 ## Development
 

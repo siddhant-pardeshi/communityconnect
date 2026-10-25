@@ -112,3 +112,10 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - video-build pipeline committed (scenes.js / tts.ps1 / assemble.sh); intermediate frames + audio git-ignored.
 - Verification: both MP4s render-checked via frame extraction; audio durations 194s each; typecheck/tests/build unchanged from v0.4.1 (no app-logic changes; footer link + versions only).
 - Post-release fix: the video-link insertion corrupted Landing.tsx and the first v0.4.2 deploy silently shipped the v0.4.1 bundle (pipeline `| tail` masked the typecheck failure). Repaired, rebuilt (index-DHzjj9ce.js), redeployed and verified live. Lesson recorded: never pipe build output through tail before checking exit codes.
+
+# v0.5.0 — production-ready public build (25 Oct 2026)
+- DE-DEMOED: the public build starts with an EMPTY state — no fictional users, events, circles, votes or founder personas anywhere. Landing demo logins and the auth demo panel are gone; the seed dataset now loads only under `npm run dev` (and via `__seedDemo()` in the console for local demos). All empty states reviewed (dashboard, discover, circles, people, support).
+- NEW: event registration links are first-class — platform auto-detected (Luma / Meetup / Eventbrite / event platforms) and shown as a chip + labeled "Registration / listing link" on the event page.
+- NEW: name privacy — `showNameOnAttendeeLists` (on by default). Off ⇒ the user appears as "Private guest" on Who's-in lists, and their profile's new "Going to" section hides (profile now lists upcoming events a person is attending, names permitting).
+- WhatsApp onboarding message for the co-founders written to the Arya Avani information bundle.
+- Verification: typecheck clean ×2 · 27/27 tests · build OK · browser smoke: empty landing (no demo), empty discover with first-poster CTA, claim-code signup path intact.

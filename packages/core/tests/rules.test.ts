@@ -10,7 +10,7 @@ const NOW = new Date('2026-11-02T10:00:00Z').getTime(); // a Monday
 
 const mkUser = (id: string, siteRole: SiteRole = 'member'): UserAccount => ({
   id, name: id, city: '', timezone: 'UTC', intents: [], links: [], avatarHue: 0,
-  privacy: { showCollege: true, showCompany: true, showBackground: true, directoryOptIn: true, showIntent: true },
+  privacy: { showCollege: true, showCompany: true, showBackground: true, directoryOptIn: true, showIntent: true, showNameOnAttendeeLists: true },
   email: `${id}@x`, passHash: 'h', salt: 's', createdAt: NOW, referralCode: 'X-0000',
   streak: { lastDay: null, count: 0, graceWeek: null }, xp: 0, ledger: [], badges: [],
   accent: 'cobalt', notifPrefs: { decisions: true, connections: true, plans: true, events: true }, siteRole,

@@ -34,6 +34,7 @@ export interface Privacy {
   showBackground: boolean;
   directoryOptIn: boolean;   // appear in People directory & public search
   showIntent: boolean;       // show job/hiring intent chips
+  showNameOnAttendeeLists: boolean; // show real name on event attendee lists & "attending" sections; off = "Private guest"
 }
 
 export interface ProfileLinks {

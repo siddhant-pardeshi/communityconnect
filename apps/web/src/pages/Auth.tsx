@@ -1,13 +1,12 @@
 import { useState } from 'react';
 import { useRoute, navigate } from '../router';
-import { signup, login, loginDemo, useStore } from '../lib/store';
+import { signup, login, useStore } from '../lib/store';
 import { Wordmark } from '../components/Logo';
 import { Btn, Field } from '../components/ui';
 import { showToast } from '../components/ui';
 
 export default function Auth({ notice }: { notice?: string }) {
   const route = useRoute();
-  const s = useStore();
   const [mode, setMode] = useState<'login' | 'signup'>(route.query.get('mode') === 'signup' ? 'signup' : 'login');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -19,8 +18,6 @@ export default function Auth({ notice }: { notice?: string }) {
   const [conduct, setConduct] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState('');
-
-  const demoUsers = Object.values(s.users).filter((u) => u.demo);
 
   async function submit(e: React.FormEvent) {
     e.preventDefault();
@@ -111,32 +108,26 @@ export default function Auth({ notice }: { notice?: string }) {
 
       <div style={{ background: 'var(--surface-2)', padding: '32px clamp(16px,4vw,48px)', display: 'flex', flexDirection: 'column', justifyContent: 'center' }} className="auth-side">
         <div style={{ maxWidth: 420, margin: '0 auto' }}>
-          <h2>Or try a demo profile</h2>
-          <p className="muted small">
-            Fictional Bengaluru accounts with live votes, plans and buddy requests — the fastest way to feel the product.
-            <span className="demo-tag" style={{ marginLeft: 6 }}>DEMO DATA</span>
-          </p>
-          <div className="stack" style={{ gap: 10 }}>
-            {demoUsers.slice(0, 4).map((u) => (
-              <button
-                key={u.id}
-                className="card card-clickable"
-                style={{ padding: 14, display: 'flex', gap: 12, alignItems: 'center', textAlign: 'left' }}
-                onClick={() => { loginDemo(u.id); navigate('/app'); }}
-              >
-                <span className="avatar" style={{ background: `hsl(${u.avatarHue} 62% 46%)`, width: 38, height: 38 }}>
-                  {u.name.split(' ').map((w) => w[0]).join('')}
-                </span>
+          <h2>Why join now?</h2>
+          <div className="stack" style={{ gap: 12, marginTop: 14 }}>
+            {[
+              ['⭐', 'Founding Member perks', 'Early accounts get +100 XP, every profile theme, and top directory placement — permanent.'],
+              ['🗳️', 'Shape the product', 'We are weeks old. Your feature requests get built, not queued for a committee.'],
+              ['🤝', 'Found your circle first', 'The early circles become the biggest communities in the city.'],
+              ['💸', 'Free while we grow', 'Everything is free now. Students and job seekers always have a free path.'],
+            ].map(([e, t, b]) => (
+              <div key={t} className="row" style={{ gap: 14, alignItems: 'flex-start' }}>
+                <span style={{ fontSize: 26 }} aria-hidden="true">{e}</span>
                 <span>
-                  <strong>{u.name}</strong>
-                  <span className="muted small" style={{ display: 'block' }}>{u.role ?? 'Community member'}{u.company ? ` · ${u.company}` : ''}</span>
+                  <strong style={{ display: 'block' }}>{t}</strong>
+                  <span className="small muted">{b}</span>
                 </span>
-              </button>
+              </div>
             ))}
           </div>
-          <p className="small muted" style={{ marginTop: 16 }}>
-            In this version each browser holds its own accounts — perfect for trying multi-user flows with
-            “switch account” in Settings. Server-side accounts arrive with the Supabase backend swap.
+          <p className="small muted" style={{ marginTop: 18 }}>
+            The platform starts with real people only — no bots, no fake activity. Your data stays in this
+            browser for now; cross-device sync is the next milestone.
           </p>
         </div>
       </div>

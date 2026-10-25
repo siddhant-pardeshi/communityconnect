@@ -48,8 +48,9 @@ Honesty rules (never violate, in code or copy):
 - Unknown price is shown as "Price unknown — check source", never inferred free.
 - Every listing carries its source URL. The recommendation formula is published
   in the UI, never a black box.
-- No invented users, testimonials, counts or endorsements anywhere. Demo data is
-  fictional, labeled "DEMO DATA", and excluded from any real claims.
+- No invented users, testimonials, counts or endorsements anywhere. The public
+  build starts EMPTY (no seeded users/events); demo data is dev-only. Any future
+  showcase content must be real and consented.
 - No dark patterns: no streak shame, no countdown pressure, no XP for invites,
   no XP for vouches, no paid safety/privacy ever.
 - Target users: students 18+, professionals, job seekers, people between roles,
@@ -110,7 +111,11 @@ File map (what lives where — keep this structure):
   packages/core/src/seed.ts     Fictional demo dataset (labeled demo:true) —
                                 9 users incl. founder team, 11 events (one PAST
                                 event e_mixer for vouch demos), 2 circles,
-                                3 decisions, RSVPs, vouches, audit, pulse
+                                3 decisions, RSVPs, vouches, audit, pulse.
+                                DEV-ONLY: apps/web load() seeds it only under
+                                `npm run dev`; the production build starts with
+                                emptyState() — no fictional anything. __seedDemo()
+                                in the browser console re-seeds for local demos.
   packages/core/src/index.ts    Barrel — the ONLY import surface
   packages/core/tests/          util.test.ts (7 tests) + rules.test.ts (20 tests)
 
@@ -161,7 +166,9 @@ AppState (persisted whole, version: 3):
 UserAccount key fields: id, name, pronouns?, city, timezone (reward tz),
   bio?, role? (display), college?, course?, company?, background?, intents[],
   links[{label,url}], avatarHue, privacy{showCollege, showCompany,
-  showBackground, directoryOptIn, showIntent}, email, passHash+salt (SHA-256
+  showBackground, directoryOptIn, showIntent, showNameOnAttendeeLists —
+  off = 'Private guest' on attendee lists and hides the profile's Going-to
+  section (see attendeeDisplay() in core/util)}, email, passHash+salt (SHA-256
   demo auth), referralCode (XXXX-0000), referredBy?, boostUntil?, streak
   {lastDay, count, graceWeek}, xp, ledger XpEntry[] {action,key,amount,at},
   badges[], accent ('cobalt'|'coral'|'sage'|'saffron'), notifPrefs,
