@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { overlaps, rewardWeekKey, dayKeyInTz, daysBetweenKeys } from '../src/util';
+import { overlaps, rewardWeekKey, dayKeyInTz, daysBetweenKeys, attendeeDisplay, attendingEvents } from '../src/util';
 
 describe('half-open interval overlap', () => {
   const T = (iso: string) => iso;
@@ -39,5 +39,38 @@ describe('reward week keys and day math', () => {
   it('daysBetweenKeys handles month boundaries', () => {
     expect(daysBetweenKeys('2026-10-31', '2026-11-02')).toBe(2);
     expect(daysBetweenKeys('2026-11-02', '2026-10-31')).toBe(-2);
+  });
+});
+
+describe('attendee name privacy', () => {
+  const mkUser = (name: string, showName: boolean) => ({
+    name, avatarHue: 5,
+    privacy: { showCollege: true, showCompany: true, showBackground: true, directoryOptIn: true, showIntent: true, showNameOnAttendeeLists: showName },
+  } as never);
+
+  it('shows the real name by default', () => {
+    const d = attendeeDisplay(mkUser('Aarav Shah', true));
+    expect(d.name).toBe('Aarav Shah');
+    expect(d.initials).toBe('AS');
+    expect(d.isPrivate).toBe(false);
+  });
+
+  it('hides the name behind Private guest when the toggle is off', () => {
+    const d = attendeeDisplay(mkUser('Aarav Shah', false));
+    expect(d.name).toBe('Private guest');
+    expect(d.isPrivate).toBe(true);
+  });
+
+  it('attendingEvents lists only active, upcoming events with participation', () => {
+    const now = Date.now();
+    const events = {
+      e1: { id: 'e1', status: 'active', startUtc: new Date(now + 86400000).toISOString(), endUtc: new Date(now + 90000000).toISOString() },
+      e2: { id: 'e2', status: 'canceled', startUtc: new Date(now + 86400000).toISOString(), endUtc: new Date(now + 90000000).toISOString() },
+      e3: { id: 'e3', status: 'active', startUtc: new Date(now - 86400000).toISOString(), endUtc: new Date(now - 80000000).toISOString() },
+    } as never;
+    const rsvps = [{ userId: 'u', eventId: 'e1' }, { userId: 'u', eventId: 'e2' }];
+    const plans = [{ eventId: 'e3', confirmations: { u: 'confirmed' }, status: 'confirmed' }];
+    const out = attendingEvents(events, rsvps, plans, 'u');
+    expect(out.map((e) => e.id)).toEqual(['e1']);
   });
 });
