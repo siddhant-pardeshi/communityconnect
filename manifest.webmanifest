@@ -1,0 +1,26 @@
+{
+  "name": "CommunityConnect",
+  "short_name": "CommConnect",
+  "description": "Find your event. Bring your people. Decide together, attend together.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#F5F3ED",
+  "theme_color": "#17291F",
+  "categories": ["social", "events", "productivity"],
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "./maskable.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ]
+}
