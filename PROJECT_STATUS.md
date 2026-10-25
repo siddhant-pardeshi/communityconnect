@@ -96,14 +96,14 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - CommunityConnect-User-Walkthrough.pdf (13 pages, 11 real screenshots) published in marketing/ and attached to release v0.4.0; linked from the landing footer and README.
 - Founder walkthrough (8 pages) exists only in the private distribution.
 - A Founders/ folder of team photos appeared in the workspace mid-build; deliberately NOT committed pending the founder's decision — see .gitignore.
-- Verification: typecheck clean ×2 · 27/27 tests · build OK · live browser checks (floating scene, collision vignette, marquee, walkthrough link).
+- Verification: typecheck clean ×2 · 30/30 tests (attendeeDisplay + attendingEvents added) · build OK · live browser checks (floating scene, collision vignette, marquee, walkthrough link).
 
 # v0.4.1 — decks, Confidential distribution, final review (25 Oct 2026)
 - Public animated feature deck: marketing/CommunityConnect-Feature-Deck.pptx — 14 slides, funny hook-driven copy, emoji storytelling, Warm Constellations design, slide transitions (fade/push/wipe) injected at OOXML level. Linked from landing footer + README.
 - Confidential folder (outside repo): renamed from the founder-private folder; holds FOUNDER_PRIVATE.md, founder guide + walkthrough PDFs, the founder briefing deck (12 slides incl. circular team photos of Siddhant, Arya and Avani Jannawar + console screenshots + current access codes), builders and screenshots. Nothing from it is committed.
 - Repository scrub complete: no plaintext access codes anywhere public (hash-only); v0.3.0 release notes + assets clean.
 - Landing footer + README link the deck; versions 0.4.1 across the repo.
-- Verification: typecheck clean ×2 · 27/27 tests · build OK · programmatic deck QA (bounds/overflow) passed; visual render check not possible in this environment (LibreOffice unavailable) — decks open cleanly in python-pptx with all transitions present.
+- Verification: typecheck clean ×2 · 30/30 tests (attendeeDisplay + attendingEvents added) · build OK · programmatic deck QA (bounds/overflow) passed; visual render check not possible in this environment (LibreOffice unavailable) — decks open cleanly in python-pptx with all transitions present.
 
 # v0.4.2 — narrated video walkthroughs (25 Oct 2026)
 - CommunityConnect-User-Video-Walkthrough.mp4 (3 min 14 s, 1080p, ~8 MB): 11 scenes, narrated by Microsoft Zira TTS, scenes built as branded 1080p frames (video-build/scenes.js) with real app screenshots in device frames, assembled with ffmpeg. Committed to marketing/ and linked from the landing footer.
@@ -118,4 +118,4 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - NEW: event registration links are first-class — platform auto-detected (Luma / Meetup / Eventbrite / event platforms) and shown as a chip + labeled "Registration / listing link" on the event page.
 - NEW: name privacy — `showNameOnAttendeeLists` (on by default). Off ⇒ the user appears as "Private guest" on Who's-in lists, and their profile's new "Going to" section hides (profile now lists upcoming events a person is attending, names permitting).
 - WhatsApp onboarding message for the co-founders written to the Arya Avani information bundle.
-- Verification: typecheck clean ×2 · 27/27 tests · build OK · browser smoke: empty landing (no demo), empty discover with first-poster CTA, claim-code signup path intact.
+- Verification: typecheck clean ×2 · 30/30 tests (attendeeDisplay + attendingEvents added) · build OK · browser smoke: empty landing (no demo), empty discover with first-poster CTA, claim-code signup path intact.
