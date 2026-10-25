@@ -111,3 +111,4 @@ Everything below uses: **implemented + tested** (unit tests or browser-verified)
 - 'Arya Avani information' folder (Desktop, outside repo): share-ready bundle for the co-founders — founder video, briefing deck, guide, walkthrough, FOUNDER_PRIVATE.md, START HERE note.
 - video-build pipeline committed (scenes.js / tts.ps1 / assemble.sh); intermediate frames + audio git-ignored.
 - Verification: both MP4s render-checked via frame extraction; audio durations 194s each; typecheck/tests/build unchanged from v0.4.1 (no app-logic changes; footer link + versions only).
+- Post-release fix: the video-link insertion corrupted Landing.tsx and the first v0.4.2 deploy silently shipped the v0.4.1 bundle (pipeline `| tail` masked the typecheck failure). Repaired, rebuilt (index-DHzjj9ce.js), redeployed and verified live. Lesson recorded: never pipe build output through tail before checking exit codes.
