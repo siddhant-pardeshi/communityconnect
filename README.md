@@ -81,7 +81,6 @@ npm run build       # typecheck (both) + production build
 | `apps/web` | React SPA: store (single mutation point), 25 screens, design system, PWA shell |
 | `marketing/` | Print-ready flyer PDF, founder's manual PDF, QR codes, social banners, build scripts |
 | `docs/` | Architecture, ADRs, acceptance matrix, launch playbook, business model, brand shortlist |
-| `AI_MASTER_CONTEXT.txt` | One-file project brief — the full architecture, rules and runbook, written so any AI tool (or new engineer) can continue the project with zero context loss |
 
 Dependency direction is one-way: `@cc/core` imports nothing from the app, so a server backend can
 reuse every rule unchanged. The store (`apps/web/src/lib/store.ts`) is the single swap point — see
